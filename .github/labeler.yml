@@ -1,0 +1,14 @@
+##
+# (c) 2021 - CloudopsWorks OÜ - https://docs.cloudops.works/
+#
+release:
+- ./*
+
+size-XS:
+- any: [ '*Dockerfile' ]
+
+size-S:
+- any: [ 'package*.json', 'node_modules/**/*' ]
+
+size-XL:
+- any: [ '**/*.js', '!*Dockerfile', '!package*.json', '!charts/**/*', '!node_modules/**/*' ]

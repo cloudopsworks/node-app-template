@@ -10,6 +10,10 @@ on:
         default: true
         required: false
         type: boolean
+      ref:
+        default: ""
+        required: false
+        type: string
       
     outputs:
       release_version:
@@ -35,8 +39,6 @@ on:
       helmRegistryPassword:
         required: true
 
-
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,8 +47,16 @@ jobs:
     steps:
       # Proceed with checkout of source with all the references (depth=0)  
       - uses: actions/checkout@v2
+        if: inputs.ref == ""
         with:
           fetch-depth: 0
+          token: ${{ secrets.BOT_TOKEN }}
+      # Proceed with checkout of source with all the references (depth=0)  
+      - uses: actions/checkout@v2
+        if: inputs.ref != ""
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.ref }}
           token: ${{ secrets.BOT_TOKEN }}
       # Setup Node JS for builds
       - name: Set Node 12

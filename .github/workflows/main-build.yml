@@ -46,7 +46,7 @@ jobs:
   static-analysis:
     needs: 
       - build
-    uses: cloudopsworks/node-app-template/.github/workflows/static-analysis@master
+    uses: cloudopsworks/node-app-template/.github/workflows/static-analysis.yml@master
     with:
       ref: v${{ needs.build.outputs.release_version }}
     secrets:

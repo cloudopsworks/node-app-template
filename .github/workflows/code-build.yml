@@ -47,7 +47,7 @@ jobs:
     steps:
       # Proceed with checkout of source with all the references (depth=0)  
       - uses: actions/checkout@v2
-        if: inputs.ref == ""
+        if: inputs.ref == ``
         with:
           fetch-depth: 0
           token: ${{ secrets.BOT_TOKEN }}

@@ -124,7 +124,7 @@ jobs:
 
       # Create a VERSION file to use through the build
       - name: Set Version File
-        id: inputs.isRelease
+        if: inputs.isRelease
         env:
           NEXT_VERSION: "${{ steps.semvers.outputs.patch }}"
         run: |

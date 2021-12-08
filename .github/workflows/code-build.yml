@@ -11,7 +11,7 @@ on:
         required: false
         type: boolean
       ref:
-        default: ""
+        default: ''
         required: false
         type: string
       
@@ -47,13 +47,13 @@ jobs:
     steps:
       # Proceed with checkout of source with all the references (depth=0)  
       - uses: actions/checkout@v2
-        if: inputs.ref == ``
+        if: inputs.ref == ''
         with:
           fetch-depth: 0
           token: ${{ secrets.BOT_TOKEN }}
       # Proceed with checkout of source with all the references (depth=0)  
       - uses: actions/checkout@v2
-        if: inputs.ref != ""
+        if: inputs.ref != ''
         with:
           fetch-depth: 0
           ref: ${{ inputs.ref }}

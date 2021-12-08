@@ -8,7 +8,7 @@ size-XS:
 - any: [ '*Dockerfile' ]
 
 size-S:
-- any: [ 'package*.json', 'node_modules/**/*' ]
+- any: [ 'package*.json', 'node_modules/**/*', 'charts/**/*' ]
 
 size-XL:
 - any: [ '**/*.js', '!*Dockerfile', '!package*.json', '!charts/**/*', '!node_modules/**/*' ]

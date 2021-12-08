@@ -22,7 +22,7 @@ jobs:
     uses: cloudopsworks/node-app-template/.github/workflows/code-build.yml@master
     with:
       isRelease: false
-      ref: ${{ github.ref }}
+      ref: ${{ github.base_ref }}
     secrets:
       DOCKER_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
       HELM_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
@@ -39,7 +39,7 @@ jobs:
       - build
     uses: cloudopsworks/node-app-template/.github/workflows/static-analysis.yml@master
     with:
-      ref: ${{ github.ref }}
+      ref: ${{ github.base_ref }}
     secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       sonarqubeUrl: ${{ secrets.SONARQUBE_URL }}

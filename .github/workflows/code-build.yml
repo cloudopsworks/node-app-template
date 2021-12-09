@@ -14,7 +14,7 @@ on:
         default: ''
         required: false
         type: string
-      
+
     outputs:
       release_version:
         value: ${{ jobs.build.outputs.release_version }}
@@ -133,7 +133,7 @@ jobs:
           version: "${{ steps.previoustag.outputs.tag }}"
 
       # Create a VERSION file to use through the build
-      - name: Set Version File
+      - name: Set Version File for a Release
         if: inputs.isRelease
         env:
           NEXT_VERSION: "${{ steps.semvers.outputs.patch }}"

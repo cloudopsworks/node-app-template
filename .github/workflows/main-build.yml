@@ -41,7 +41,7 @@ jobs:
     with:
       release-tag: ${{ needs.build.outputs.release_version }}
     secrets:
-      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      token: ${{ secrets.BOT_TOKEN }}
 
   static-analysis:
     needs:

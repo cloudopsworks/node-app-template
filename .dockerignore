@@ -3,5 +3,11 @@ charts/
 NOTICE
 LICENSE
 README.md
-jenkins-x*.*
-skaffold.*
+OWNERS
+OWNERS_ALIASES
+jenkins-x.yml
+skaffold.yaml
+.helmignore
+.git*
+gulpfile.js
+sonar-project.properties

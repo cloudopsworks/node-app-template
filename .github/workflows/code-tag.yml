@@ -96,7 +96,7 @@ jobs:
         uses: metcalfc/changelog-generator@v3.0.0
         with:
           myToken: ${{ secrets.BOT_TOKEN }}
-          base-ref: 'v${{ steps.previoustag.outputs.tag }}'
+          base-ref: '${{ steps.previoustag.outputs.tag }}'
       - name: Write Changelog
         run: |
           cat > CHANGELOG.md <<EOF

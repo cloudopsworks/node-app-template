@@ -28,7 +28,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           ref: ${{ inputs.ref }}
       # Setup Node JS for builds
-      - name: Set Node 12
+      - name: Set Node 14
         uses: actions/setup-node@v2
         with:
           node-version: "14"

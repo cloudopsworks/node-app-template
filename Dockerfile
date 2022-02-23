@@ -1,4 +1,4 @@
-FROM node:12-slim
+FROM node:14-slim
 EXPOSE 8081
 EXPOSE 8443
 

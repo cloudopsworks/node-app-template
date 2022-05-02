@@ -85,7 +85,8 @@ additionalVolumes: {}
 ingress:
   annotations:
 #      kubernetes.io/ingress.class: nginx
-
+tracing:
+  enabled: false
 # values we use from the `jx-requirements.yml` file if we are using helmfile and helm 3
 jxRequirements:
   ingress:

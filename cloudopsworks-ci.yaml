@@ -11,6 +11,7 @@ zipGlobs:
   - node_modules/**
   - ./**
   - .env
+staticAnalysis: true
 excludeGlobs:
   - Dockerfile
   - .helmignore

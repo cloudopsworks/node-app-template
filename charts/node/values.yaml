@@ -10,6 +10,11 @@ image:
 # define environment variables here as a map of key: value
 env:
 
+# NodeJS Application configuration secret
+config:
+  dotenv: ""
+
+
 # enable this flag to use knative serve to deploy the app
 knativeDeploy: false
 
@@ -77,9 +82,9 @@ tolerations: {}
 
 nodeSelector: {}
 
-additionalVolumeMounts: {}
+additionalVolumeMounts: []
 
-additionalVolumes: {}
+additionalVolumes: []
 
 # custom ingress annotations on this service
 ingress:
@@ -99,7 +104,7 @@ jxRequirements:
       production: false
 
     # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
-    apiVersion: "networking.k8s.io/v1beta1"
+    apiVersion: "networking.k8s.io/v1"
 
     # shared ingress annotations on all services
     annotations:

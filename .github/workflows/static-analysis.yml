@@ -35,11 +35,53 @@ jobs:
         with:
           node-version: "14"
           distribution: "adopt"
+      # Cache all NPM packages
+      - name: Cache NPM packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      # Get project name
+      - name: Get project name
+        id: project_name
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.name' ./package.json
+      # Get project description
+      - name: Get project description
+        id: project_description
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.description' ./package.json
+      # Create generic gulp File for process
+      - name: Create gulpfile
+        run: |
+          cat > gulpfile.js << EOF
+          var gulp = require('gulp');
+          var sonarqubeScanner = require('sonarqube-scanner');
+          var sonarUrl = process.env.SONARQUBE_URL
+          var sonarToken = process.env.SONARQUBE_TOKEN
+
+          gulp.task('default', function(callback) {
+            sonarqubeScanner({
+              serverUrl : sonarUrl,
+              token : sonarToken,
+              options : {
+                "sonar.projectKey": "${{ steps.project_name.outputs.result }}",
+                "sonar.projectName": "${{ steps.project_description.outputs.result }}"
+              }
+            }, callback);
+          });
+          EOF
       # Test the code!
       - name: Static Test Code
         env:
           SONARQUBE_URL: ${{ secrets.sonarqubeUrl }}
           SONARQUBE_TOKEN: ${{ secrets.sonarqubeToken }}
         run: |
+          npm install
           npm install -D gulp
+          npm install -D sonarqube-scanner
           node ./node_modules/gulp/bin/gulp.js

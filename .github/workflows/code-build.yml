@@ -58,7 +58,7 @@ jobs:
           distribution: "adopt"
       # Helm Chart build & deploy Support
       - uses: azure/setup-helm@v1
-      # Cache all maven packages
+      # Cache all NPM packages
       - name: Cache NPM packages
         uses: actions/cache@v2
         with:

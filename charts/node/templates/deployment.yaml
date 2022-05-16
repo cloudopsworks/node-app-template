@@ -68,7 +68,14 @@ spec:
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.resources | indent 10 }}
+        volumeMounts:
+          - name: "dotenv-secret"
+            mountPath: "/config"
+            readOnly: true
+{{- if .Values.additionalVolumeMounts }}
+{{ toYaml .Values.additionalVolumeMounts | indent 10 }}
+{{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.affinity }}
       affinity:
@@ -83,5 +90,16 @@ spec:
 {{ toYaml .Values.nodeSelector | indent 8 }}
 {{- end }}
       volumes:
+        - name: dotenv-secret
+          secret:
+{{- if .Values.service.name }}
+            secretName: {{ .Values.service.name }}-portal-environment
+{{- else }}
+            secretName: {{ template "fullname" . }}-portal-environment
+{{- end }}
+            optional: false
+            defaultMode: 0440
+{{- if .Values.additionalVolumes }}
 {{ toYaml .Values.additionalVolumes | indent 8 }}
+{{- end }}
 {{- end }}

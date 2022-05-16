@@ -1,0 +1,11 @@
+{
+  "name": "node-app",
+  "version" : "0.0.0-SNAPSHOT",
+  "description": "Node Application Template",
+  "engines": {
+    "node": "14.19.0"
+  },
+  "dependencies": {},
+  "scripts": {},
+  "devDependencies": {}
+}

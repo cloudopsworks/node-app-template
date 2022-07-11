@@ -41,7 +41,9 @@ on:
         required: true
 
     outputs:
-      has_preview: ${{ jobs.build.outputs.has_preview }}
+      has_preview:
+        description: "Has Preview output"
+        value: ${{ jobs.build.outputs.has_preview }}
 
 jobs:
   build:

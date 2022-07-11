@@ -54,9 +54,9 @@ jobs:
       dockerRegistryPassword: ${{ secrets.AZURE_SERVICE_SECRET }}
       helmRegistryUser: ${{ secrets.AZURE_SERVICE_ID }}
       helmRegistryPassword: ${{ secrets.AZURE_SERVICE_SECRET }}
-      AZ_AKS_RESOURCE_GROUP: AZURE_RESOURCE_GROUP
-      AZ_AKS_CLUSTER_NAME: AZURE_AKS_CLUSTER_NAME
-      AZ_CREDENTIALS: AZURE_CREDENTIALS
+      AZ_AKS_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+      AZ_AKS_CLUSTER_NAME: ${{ secrets.AZURE_AKS_CLUSTER_NAME }}
+      AZ_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
   static-analysis:
     needs:

@@ -28,3 +28,6 @@ excludeGlobs:
   - gulpfile*
 # cd:
 #   env: staging
+#   preview:
+#     enabled: true
+#     kubernetes: true

@@ -40,7 +40,7 @@ jobs:
   preview:
     needs:
       - build
-    uses: cloudopsworks/node-app-template/.github/workflows/preview-azure.yml@master
+    uses: cloudopsworks/base-app-template/.github/workflows/preview-azure.yml@master
     with:
       semver: 0.1.0-SNAPSHOT-PR_${{ github.event.pull_request.number }}
       ref: ${{ github.head_ref }}

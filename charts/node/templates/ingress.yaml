@@ -34,7 +34,7 @@ spec:
             name: {{ template "fullname" . }}
         {{- end }}
             port: 
-              number: 80
+              number: {{ .Values.service.externalPort }}
 {{- if .Values.ingress.tls.enabled }}
   tls:
   - hosts:

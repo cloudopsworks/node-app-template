@@ -15,6 +15,9 @@ on:
       semver:
         required: true
         type: string
+      pr_name:
+        required: true
+        type: string
 
     secrets:
       DOCKER_REGISTRY_ADDRESS:
@@ -53,9 +56,12 @@ jobs:
           ref: ${{ inputs.ref }}
           token: ${{ secrets.BOT_TOKEN }}
       # Azure login
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZ_CREDENTIALS }}
+      - name: Azure Login
+        run: az login --identity
+      # # Azure login
+      # - uses: azure/login@v1
+      #   with:
+      #     creds: ${{ secrets.AZ_CREDENTIALS }}
       # AKS context setup
       - uses: azure/aks-set-context@v3
         with:
@@ -63,6 +69,9 @@ jobs:
           cluster-name: ${{ secrets.AZ_AKS_CLUSTER_NAME }}
           admin: 'true'
 
+      # Kubernetes cli
+      - uses: azure/setup-kubectl@v3
+      
       # Helm Chart build & deploy Support
       - uses: azure/setup-helm@v1
 
@@ -79,6 +88,13 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: yq eval '.cd.preview.enable' ./cloudopsworks-ci.yaml | grep true | wc -l
+
+      # Get pipeline conf
+      - name: Get pipeline preview enabled
+        id: preview_domain
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval '.cd.preview.domain' ./cloudopsworks-ci.yaml
 
       # Get pipeline conf
       - name: Get pipeline helm enable
@@ -130,6 +146,8 @@ jobs:
           HELM_EXPERIMENTAL_OCI: "1"
           REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
           REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
+          PR_NAME: ${{ inputs.pr_name }}
+          PREVIEW_DOMAIN_NAME: ${{ steps.preview_domain.outputs.result }}
         run: |
           cd charts/preview
           make preview
@@ -139,3 +157,20 @@ jobs:
         run: |
           echo "Will run helm install!"
                   
+      - name: Report Preview deployment and URL
+        if: steps.pipeline_helm.outputs.result == 1
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.BOT_TOKEN }}
+          script: |
+            const output = `#### Preview Deployment Completed
+            You can find the deployed instance [here](https://${{ steps.getowner.outputs.repo_name }}-${{ inputs.pr_name }}.${{ steps.preview_domain.outputs.result }})
+            
+            *Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });

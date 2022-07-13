@@ -31,3 +31,4 @@ excludeGlobs:
 #   preview:
 #     enabled: true
 #     kubernetes: true
+#     domain: example.com

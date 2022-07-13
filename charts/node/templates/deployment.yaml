@@ -1,3 +1,4 @@
+---
 {{- if .Values.knativeDeploy }}
 {{- else }}
 apiVersion: apps/v1

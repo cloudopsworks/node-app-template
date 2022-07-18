@@ -32,8 +32,38 @@ jobs:
       BOT_EMAIL: ${{ secrets.BOT_EMAIL }}
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
 
+  target_cloud:
+    runs-on: ubuntu-latest
+    outputs:
+      registry_user: ${{  }}
+      registry_auth: ${{  }}
+    steps:
+      - name: Install AWS Client
+        if: ${{ secrets.TARGET_CLOUD == 'AWS' }}
+
+      - name: Determine Cloud
+        run: |
+          cloud="${{ secrets.TARGET_CLOUD }}"
+          if [[ "$cloud" == "AWS" ]] ; then
+            AWS_ACCESS_KEY_ID="${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}"
+            AWS_SECRET_ACCESS_KEY="${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY  }}"
+            aws_pass=`aws ecr get-login-password --region ${{ secrets.AWS_REGION }}`
+            echo "::set-output name=registry_user::AWS"
+            echo "::set-output name=registry_auth::$aws_pass"
+          elif [[ "$cloud" == "AZ" ]] ; then
+            az_id="${{ secrets.AZURE_SERVICE_ID }}"
+            az_pwd="${{ secrets.AZURE_SERVICE_SECRET }}"
+            echo "::set-output name=registry_user::$az_id"
+            echo "::set-output name=registry_auth::$az_pwd"
+          elif [[ "$cloud" == "GCP" ]] ; then
+            gcp_id="${{ secrets.GCP_SERVICE_ID }}"
+            gcp_pwd="${{ secrets.GCP_SERVICE_SECRET }}"
+            echo "::set-output name=registry_user::$gcp_id"
+            echo "::set-output name=registry_auth::$gcp_pwd"
+          fi
   build:
-    needs: 
+    needs:
+      - target_cloud
       - new_version
     uses: cloudopsworks/node-app-template/.github/workflows/code-build.yml@master
     with:
@@ -45,10 +75,10 @@ jobs:
       BOT_USER: ${{ secrets.BOT_USER }}
       BOT_EMAIL: ${{ secrets.BOT_EMAIL }}
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      dockerRegistryUser: ${{ secrets.AZURE_SERVICE_ID }}
-      dockerRegistryPassword: ${{ secrets.AZURE_SERVICE_SECRET }}
-      helmRegistryUser: ${{ secrets.AZURE_SERVICE_ID }}
-      helmRegistryPassword: ${{ secrets.AZURE_SERVICE_SECRET }}
+      dockerRegistryUser: ${{ steps.target_cloud.outputs.registry_user }}
+      dockerRegistryPassword: ${{ steps.target_cloud.outputs.registry_auth }}
+      helmRegistryUser: ${{ steps.target_cloud.outputs.registry_user }}
+      helmRegistryPassword: ${{ steps.target_cloud.outputs.registry_auth }}
 
   release:
     needs:

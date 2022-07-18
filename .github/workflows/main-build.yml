@@ -47,7 +47,7 @@ jobs:
           if [[ "$cloud" == "AWS" ]] ; then
             AWS_ACCESS_KEY_ID="${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}"
             AWS_SECRET_ACCESS_KEY="${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY  }}"
-            aws_pass=`aws ecr get-login-password --region ${{ secrets.AWS_REGION }}`
+            aws_pass=`aws ecr get-login-password --region ${{ secrets.BUILD_AWS_REGION }}`
             echo "::set-output name=registry_user::AWS"
             echo "::set-output name=registry_auth::$aws_pass"
           elif [[ "$cloud" == "AZ" ]] ; then

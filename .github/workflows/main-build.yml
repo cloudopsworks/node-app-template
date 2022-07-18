@@ -35,13 +35,14 @@ jobs:
   target_cloud:
     runs-on: ubuntu-latest
     outputs:
-      registry_user: ${{  }}
-      registry_auth: ${{  }}
+      registry_user: ${{ steps.acloud.outputs.registry_user }}
+      registry_auth: ${{ steps.acloud.outputs.registry_auth }}
     steps:
       # - name: Install AWS Client
       #   if: ${{ secrets.TARGET_CLOUD == 'AWS' }}
 
       - name: Determine Cloud
+        id: acloud
         run: |
           cloud="${{ secrets.TARGET_CLOUD }}"
           if [[ "$cloud" == "AWS" ]] ; then
@@ -61,6 +62,7 @@ jobs:
             echo "::set-output name=registry_user::$gcp_id"
             echo "::set-output name=registry_auth::$gcp_pwd"
           fi
+
   build:
     needs:
       - target_cloud
@@ -75,10 +77,10 @@ jobs:
       BOT_USER: ${{ secrets.BOT_USER }}
       BOT_EMAIL: ${{ secrets.BOT_EMAIL }}
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      dockerRegistryUser: ${{ steps.target_cloud.outputs.registry_user }}
-      dockerRegistryPassword: ${{ steps.target_cloud.outputs.registry_auth }}
-      helmRegistryUser: ${{ steps.target_cloud.outputs.registry_user }}
-      helmRegistryPassword: ${{ steps.target_cloud.outputs.registry_auth }}
+      dockerRegistryUser: ${{ needs.target_cloud.outputs.registry_user }}
+      dockerRegistryPassword: ${{ needs.target_cloud.outputs.registry_auth }}
+      helmRegistryUser: ${{ needs.target_cloud.outputs.registry_user }}
+      helmRegistryPassword: ${{ needs.target_cloud.outputs.registry_auth }}
 
   release:
     needs:

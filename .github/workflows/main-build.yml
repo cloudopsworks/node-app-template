@@ -38,8 +38,8 @@ jobs:
       registry_user: ${{  }}
       registry_auth: ${{  }}
     steps:
-      - name: Install AWS Client
-        if: ${{ secrets.TARGET_CLOUD == 'AWS' }}
+      # - name: Install AWS Client
+      #   if: ${{ secrets.TARGET_CLOUD == 'AWS' }}
 
       - name: Determine Cloud
         run: |

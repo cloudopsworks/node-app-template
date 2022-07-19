@@ -203,16 +203,6 @@ jobs:
           REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
           TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
         run: |
-          if [[ "$TARGET_CLOUD" == "AWS" ]] ; then
-            export AWS_ACCESS_KEY_ID="${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}"
-            export AWS_SECRET_ACCESS_KEY="${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}"
-            export HELM_CREDS_USER=AWS
-            export HELM_CREDS_PASSWORD=`aws ecr get-login-password --region ${{ secrets.BUILD_AWS_REGION }}`
-          elif [[ "$TARGET_CLOUD" == "AZ" ]] ; then
-            export HELM_CREDS_USER=${{ secrets.AZURE_SERVICE_ID }}
-            export HELM_CREDS_PASSWORD=${{ secrets.AZURE_SERVICE_SECRET }}
-          if
-
           cd charts/$REPOSITORY_NAME
           make tag
       #
@@ -223,12 +213,21 @@ jobs:
         env:
           HELM_REGISTRY_ADDRESS: ${{ secrets.HELM_REGISTRY_ADDRESS }}
           DOCKER_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-          HELM_CREDS_USER: ${{ secrets.helmRegistryUser }}
-          HELM_CREDS_PASSWORD: ${{ secrets.helmRegistryPassword }}
           HELM_EXPERIMENTAL_OCI: "1"
           REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
           REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
+          TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
         run: |
+          if [[ "$TARGET_CLOUD" == "AWS" ]] ; then
+            export AWS_ACCESS_KEY_ID="${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}"
+            export AWS_SECRET_ACCESS_KEY="${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}"
+            export HELM_CREDS_USER=AWS
+            export HELM_CREDS_PASSWORD=`aws ecr get-login-password --region ${{ secrets.BUILD_AWS_REGION }}`
+          elif [[ "$TARGET_CLOUD" == "AZ" ]] ; then
+            export HELM_CREDS_USER=${{ secrets.AZURE_SERVICE_ID }}
+            export HELM_CREDS_PASSWORD=${{ secrets.AZURE_SERVICE_SECRET }}
+          if
+
           cd charts/$REPOSITORY_NAME
           make release
 

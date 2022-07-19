@@ -217,9 +217,9 @@ jobs:
           REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
           REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
           TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
-          AWS_ID: ${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET: ${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.BUILD_AWS_REGION }}
+          AWS_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           AZ_ID: ${{ secrets.AZURE_SERVICE_ID }}
           AZ_SECRET: ${{ secrets.AZURE_SERVICE_SECRET }}
         run: |

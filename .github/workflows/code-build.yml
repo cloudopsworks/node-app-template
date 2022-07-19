@@ -217,12 +217,15 @@ jobs:
           REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
           REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
           TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
+          AWS_ID: ${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET: ${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.BUILD_AWS_REGION }}
         run: |
           if [[ "$TARGET_CLOUD" == "AWS" ]] ; then
-            export AWS_ACCESS_KEY_ID="${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}"
-            export AWS_SECRET_ACCESS_KEY="${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}"
+            export AWS_ACCESS_KEY_ID="$AWS_ID"
+            export AWS_SECRET_ACCESS_KEY="$AWS_SECRET"
             export HELM_CREDS_USER=AWS
-            export HELM_CREDS_PASSWORD=`aws ecr get-login-password --region ${{ secrets.BUILD_AWS_REGION }}`
+            export HELM_CREDS_PASSWORD=`aws ecr get-login-password --region $AWS_REGION`
           elif [[ "$TARGET_CLOUD" == "AZ" ]] ; then
             export HELM_CREDS_USER=${{ secrets.AZURE_SERVICE_ID }}
             export HELM_CREDS_PASSWORD=${{ secrets.AZURE_SERVICE_SECRET }}

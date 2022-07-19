@@ -147,7 +147,7 @@ jobs:
       #
       # Docker Build login Azure
       - name: Docker Login Azure
-        if: steps.pipeline_docker.outputs.result == 1 && secrets.TARGET_CLOUD == 'AZ'
+        if: ${{ steps.pipeline_docker.outputs.result == 1 && secrets.TARGET_CLOUD == 'AZ' }}
         uses: docker/login-action@v1
         with:
           registry: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}

@@ -31,13 +31,17 @@ on:
         required: true
       BOT_TOKEN:
         required: true
-      dockerRegistryUser:
+      TARGET_CLOUD:
         required: true
-      dockerRegistryPassword:
+      AWS_REGION:
         required: true
-      helmRegistryUser:
+      AWS_ACCESS_KEY_ID:
         required: true
-      helmRegistryPassword:
+      AWS_SECRET_ACCESS_KEY_ID:
+        required: true
+      AZURE_SERVICE_ID:
+        required: true
+      AZURE_SERVICE_SECRET:
         required: true
 
     outputs:
@@ -141,15 +145,25 @@ jobs:
       - name: Test Code
         run: CI=true DISPLAY=:99 npm test
       #
-      # Docker Build and deploy to registry
-      #
-      - name: Docker Login
-        if: steps.pipeline_docker.outputs.result == 1
+      # Docker Build login Azure
+      - name: Docker Login Azure
+        if: steps.pipeline_docker.outputs.result == 1 && secrets.TARGET_CLOUD == 'AZ'
         uses: docker/login-action@v1
         with:
           registry: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-          username: ${{ secrets.dockerRegistryuser }}
-          password: ${{ secrets.dockerRegistryPassword }}
+          username: ${{ secrets.AZURE_SERVICE_ID }}
+          password: ${{ secrets.AZURE_SERVICE_SECRET }}
+      #
+      # Docker Build login AWS
+      - name: Docker Login AWS
+        if: steps.pipeline_docker.outputs.result == 1 && secrets.TARGET_CLOUD == 'AWS'
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #
+      # Build-X run
       - name: Set up Docker Buildx
         if: steps.pipeline_docker.outputs.result == 1
         uses: docker/setup-buildx-action@v1
@@ -180,12 +194,21 @@ jobs:
         env:
           HELM_REGISTRY_ADDRESS: ${{ secrets.HELM_REGISTRY_ADDRESS }}
           DOCKER_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-          HELM_CREDS_USER: ${{ secrets.helmRegistryUser }}
-          HELM_CREDS_PASSWORD: ${{ secrets.helmRegistryPassword }}
           HELM_EXPERIMENTAL_OCI: "1"
           REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
           REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
+          TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
         run: |
+          if [[ "$TARGET_CLOUD" == "AWS" ]] ; then
+            export AWS_ACCESS_KEY_ID="${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}"
+            export AWS_SECRET_ACCESS_KEY="${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}"
+            export HELM_CREDS_USER=AWS
+            export HELM_CREDS_PASSWORD=`aws ecr get-login-password --region ${{ secrets.BUILD_AWS_REGION }}`
+          elif [[ "$TARGET_CLOUD" == "AZ" ]] ; then
+            export HELM_CREDS_USER=${{ secrets.AZURE_SERVICE_ID }}
+            export HELM_CREDS_PASSWORD=${{ secrets.AZURE_SERVICE_SECRET }}
+          if
+
           cd charts/$REPOSITORY_NAME
           make tag
       #

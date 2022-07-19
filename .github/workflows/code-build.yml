@@ -220,6 +220,8 @@ jobs:
           AWS_ID: ${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}
           AWS_SECRET: ${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.BUILD_AWS_REGION }}
+          AZ_ID: ${{ secrets.AZURE_SERVICE_ID }}
+          AZ_SECRET: ${{ secrets.AZURE_SERVICE_SECRET }}
         run: |
           if [[ "$TARGET_CLOUD" == "AWS" ]] ; then
             export AWS_ACCESS_KEY_ID="$AWS_ID"
@@ -227,8 +229,8 @@ jobs:
             export HELM_CREDS_USER=AWS
             export HELM_CREDS_PASSWORD=`aws ecr get-login-password --region $AWS_REGION`
           elif [[ "$TARGET_CLOUD" == "AZ" ]] ; then
-            export HELM_CREDS_USER=${{ secrets.AZURE_SERVICE_ID }}
-            export HELM_CREDS_PASSWORD=${{ secrets.AZURE_SERVICE_SECRET }}
+            export HELM_CREDS_USER="$AZ_ID"
+            export HELM_CREDS_PASSWORD="$AZ_SECRET"
           if
 
           cd charts/$REPOSITORY_NAME

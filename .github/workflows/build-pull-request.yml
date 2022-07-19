@@ -20,9 +20,25 @@ permissions:
   checks: write
 
 jobs:
+  target_cloud:
+    runs-on: ubuntu-latest
+    outputs:
+      provider: ${{ steps.provider.outputs.name }}
+    steps:
+      - name: extract cloud provider
+        id: provider
+        env:
+          TARGET: ${{ secrets.TARGET_CLOUD }}
+        run: |
+          if [[ "$TARGET" == "AWS" ]] ; then
+            echo "::set-output name=name::AWS"
+          fi
+
+          if [[ "$TARGET" == "AZ" ]] ; then
+            echo "::set-output name=name::AZURE"
+          fi
+
   build:
-    needs:
-      - target_cloud
     uses: cloudopsworks/node-app-template/.github/workflows/code-build.yml@master
     with:
       isRelease: false
@@ -43,8 +59,9 @@ jobs:
 
   preview-azure:
     needs:
+      - target_cloud
       - build
-    if: ${{ secrets.TARGET_CLOUD == 'AZ' }}
+    if: ${{ needs.target_cloud.outputs.provider == 'AZURE' }}
     uses: ./.github/workflows/preview-azure.yml
     with:
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}
@@ -64,8 +81,9 @@ jobs:
 
   preview-aws:
     needs:
+      - target_cloud
       - build
-    if: ${{ secrets.TARGET_CLOUD == 'AWS' }}
+    if: ${{ needs.target_cloud.outputs.provider == 'AWS' }}
     uses: ./.github/workflows/preview-aws.yml
     with:
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}

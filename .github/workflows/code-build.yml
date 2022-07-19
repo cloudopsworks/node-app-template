@@ -208,7 +208,7 @@ jobs:
       #
       # Helm Build and deploy to ACR registry
       #
-      - name: Helm Build Release
+      - name: Helm Build Release Azure ACR
         if: steps.pipeline_helm.outputs.result == 1 && inputs.isRelease == true && env.TARGET_CLOUD == 'AZ'
         env:
           HELM_REGISTRY_ADDRESS: ${{ secrets.HELM_REGISTRY_ADDRESS }}
@@ -237,7 +237,7 @@ jobs:
           pass=`aws ecr get-login-password --region $AWS_REGION`
           echo "::set-output name=auth::$pass"
 
-      - name: Helm Build Release ECR
+      - name: Helm Build Release AWS ECR
         if: steps.pipeline_helm.outputs.result == 1 && inputs.isRelease == true && env.TARGET_CLOUD == 'AWS'
         env:
           HELM_REGISTRY_ADDRESS: ${{ secrets.HELM_REGISTRY_ADDRESS }}

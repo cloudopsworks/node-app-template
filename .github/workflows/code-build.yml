@@ -156,7 +156,7 @@ jobs:
       #
       # Docker Build login AWS
       - name: Docker Login AWS
-        if: steps.pipeline_docker.outputs.result == 1 && secrets.TARGET_CLOUD == 'AWS'
+        if: ${{ steps.pipeline_docker.outputs.result == 1 && secrets.TARGET_CLOUD == 'AWS' }}
         uses: docker/login-action@v1
         with:
           registry: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}

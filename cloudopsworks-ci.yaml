@@ -23,7 +23,7 @@ excludeGlobs:
   - jenkins*
   - target/
   - charts/
-  - cloudopsworks-ci
+  - cloudopsworks-ci*
   - skafold*
   - gulpfile*
 #

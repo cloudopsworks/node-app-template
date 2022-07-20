@@ -29,8 +29,28 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.BOT_TOKEN }}
           ref: ${{ inputs.ref }}
-      # Setup Node JS for builds
-      - name: Set Node 14
+      # Get pipeline conf node version
+      - name: Get pipeline node version
+        id: node_version
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval '.build.node.version' ./cloudopsworks-ci.yaml | grep true | wc -l
+      # Get pipeline conf node dist
+      - name: Get pipeline node dist
+        id: node_dist
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval '.build.node.dist' ./cloudopsworks-ci.yaml | grep true | wc -l
+      # Setup Node JS for builds with version provided
+      - name: Set Node Version
+        if: steps.node_version.outputs.result != '' && steps.node_dist.outputs.result != ''
+        uses: actions/setup-node@v2
+        with:
+          node-version: "${{ steps.node_version.outputs.result }}"
+          distribution: "${{ steps.node_dist.outputs.result }}"
+      # Setup Default Node JS for builds
+      - name: Set Default Node Version
+        if: steps.node_version.outputs.result == '' || steps.node_dist.outputs.result == ''
         uses: actions/setup-node@v2
         with:
           node-version: "14"

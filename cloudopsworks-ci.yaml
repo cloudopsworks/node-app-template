@@ -26,6 +26,14 @@ excludeGlobs:
   - cloudopsworks-ci
   - skafold*
   - gulpfile*
+#
+## Default node version is 14, uncomment to build with different
+# build:
+#   node:
+#     version: 12
+#     dist: adopt
+#
+## CD pipeline configuration uncomment and configure accordingly to enable
 # cd:
 #   env: staging
 #   preview:

@@ -42,27 +42,19 @@ jobs:
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version' ./cloudopsworks-ci.yaml | grep -v null
+          cmd: yq eval '.build.node.version // "14"' ./cloudopsworks-ci.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.dist' ./cloudopsworks-ci.yaml | grep -v null
+          cmd: yq eval '.build.node.dist // "adopt"' ./cloudopsworks-ci.yaml
       # Setup Node JS for builds with version provided
       - name: Set Node Version
-        if: steps.node_version.outputs.result != '' && steps.node_dist.outputs.result != ''
         uses: actions/setup-node@v2
         with:
           node-version: "${{ steps.node_version.outputs.result }}"
           distribution: "${{ steps.node_dist.outputs.result }}"
-      # Setup Default Node JS for builds
-      - name: Set Default Node Version
-        if: steps.node_version.outputs.result == '' || steps.node_dist.outputs.result == ''
-        uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-          distribution: "adopt"
       # Helm Chart build & deploy Support
       - uses: azure/setup-helm@v1
       # Cache all maven packages

@@ -68,13 +68,13 @@ jobs:
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version' ./cloudopsworks-ci.yaml | grep true | wc -l
+          cmd: yq eval '.build.node.version' ./cloudopsworks-ci.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.dist' ./cloudopsworks-ci.yaml | grep true | wc -l
+          cmd: yq eval '.build.node.dist' ./cloudopsworks-ci.yaml
       # Setup Node JS for builds with version provided
       - name: Set Node Version
         if: steps.node_version.outputs.result != '' && steps.node_dist.outputs.result != ''

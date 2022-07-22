@@ -60,6 +60,10 @@ jobs:
       # #     creds: ${{ secrets.AZ_CREDENTIALS }}
       # EKS context setup
       - name: EKS context setup
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: aws eks update-kubeconfig --name ${{ secrets.AWS_EKS_CLUSTER_NAME }}
 
       # Kubernetes cli

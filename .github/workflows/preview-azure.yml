@@ -148,11 +148,6 @@ jobs:
           cd charts/preview
           make preview
 
-      - name: Deploy Preview Helm
-        if: steps.pipeline_helm.outputs.result == 1
-        run: |
-          echo "Will run helm install!"
-                  
       - name: Report Preview deployment and URL
         if: steps.pipeline_helm.outputs.result == 1
         uses: actions/github-script@v4

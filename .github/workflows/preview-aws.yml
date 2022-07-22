@@ -132,7 +132,7 @@ jobs:
           cd charts/$REPOSITORY_NAME
           make tag
 
-      - name: Helm Build Preview AWS
+      - name: Run Preview prepare
         if: steps.pipeline_helm.outputs.result == 1
         env:
           HELM_REGISTRY_ADDRESS: ${{ secrets.HELM_REGISTRY_ADDRESS }}
@@ -140,17 +140,11 @@ jobs:
           HELM_EXPERIMENTAL_OCI: "1"
           REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
           REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
-          TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
-          HELM_CREDS_USER: AWS
-          HELM_CREDS_PASSWORD: ${{ steps.ecr_login.outputs.auth }}
+          PR_NAME: ${{ inputs.pr_name }}
+          PREVIEW_DOMAIN_NAME: ${{ steps.preview_domain.outputs.result }}
         run: |
           cd charts/preview
           make preview
-
-      - name: Deploy Preview Helm
-        if: steps.pipeline_helm.outputs.result == 1
-        run: |
-          echo "Will run helm install!"
                   
       - name: Report Preview deployment and URL
         if: steps.pipeline_helm.outputs.result == 1

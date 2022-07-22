@@ -132,22 +132,7 @@ jobs:
           cd charts/$REPOSITORY_NAME
           make tag
 
-      #
-      # Helm Build and deploy to ECR registry
-      #
-      - name: AWS ECR login
-        id: ecr_login
-        if: steps.pipeline_helm.outputs.result == 1
-        env:
-          TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: |
-          pass=`aws ecr get-login-password --region $AWS_REGION`
-          echo "::set-output name=auth::$pass"
-
-      - name: Helm Build Preview AWS ECR
+      - name: Helm Build Preview AWS
         if: steps.pipeline_helm.outputs.result == 1
         env:
           HELM_REGISTRY_ADDRESS: ${{ secrets.HELM_REGISTRY_ADDRESS }}
@@ -159,8 +144,8 @@ jobs:
           HELM_CREDS_USER: AWS
           HELM_CREDS_PASSWORD: ${{ steps.ecr_login.outputs.auth }}
         run: |
-          cd charts/$REPOSITORY_NAME
-          make release
+          cd charts/preview
+          make preview
 
       - name: Deploy Preview Helm
         if: steps.pipeline_helm.outputs.result == 1

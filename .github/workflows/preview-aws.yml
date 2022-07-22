@@ -132,6 +132,10 @@ jobs:
           cd charts/$REPOSITORY_NAME
           make tag
 
+      # Install aws-iam-auth
+      - uses: prepor/action-aws-iam-authenticator@master
+      
+      # Configure AWS context
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v1
         with:

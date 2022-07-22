@@ -120,7 +120,7 @@ jobs:
       # Helm tag pull request version
       #
       - name: Helm Build Preview
-        if: steps.pipeline_helm.outputs.result == 1 && inputs.isRelease == false
+        if: steps.pipeline_helm.outputs.result == 1
         env:
           HELM_REGISTRY_ADDRESS: ${{ secrets.HELM_REGISTRY_ADDRESS }}
           DOCKER_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
@@ -137,7 +137,7 @@ jobs:
       #
       - name: AWS ECR login
         id: ecr_login
-        if: steps.pipeline_helm.outputs.result == 1 && inputs.isRelease == true && env.TARGET_CLOUD == 'AWS'
+        if: steps.pipeline_helm.outputs.result == 1
         env:
           TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -148,7 +148,7 @@ jobs:
           echo "::set-output name=auth::$pass"
 
       - name: Helm Build Preview AWS ECR
-        if: steps.pipeline_helm.outputs.result == 1 && inputs.isRelease == true && env.TARGET_CLOUD == 'AWS'
+        if: steps.pipeline_helm.outputs.result == 1
         env:
           HELM_REGISTRY_ADDRESS: ${{ secrets.HELM_REGISTRY_ADDRESS }}
           DOCKER_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}

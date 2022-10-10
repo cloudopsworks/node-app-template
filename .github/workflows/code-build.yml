@@ -48,13 +48,28 @@ on:
       has_preview:
         description: "Has Preview output"
         value: ${{ jobs.build.outputs.has_preview }}
+      pipeline_helm:
+        description: "Pipeline with Helm Enabled"
+        value: ${{ jobs.build.outputs.pipeline_helm }}
+      pipeline_docker:
+        description: "Pipeline with Docker Enabled"
+        value: ${{ jobs.build.outputs.pipeline_docker }}
+      pipeline_sonarqube:
+        description: "Pipeline with Sonarqube Analysis Enabled"
+        value: ${{ jobs.build.outputs.pipeline_sonarqube }}
+      pipeline_dtrack:
+        description: "Pipeline with DependencyTrack Analysis Enabled"
+        value: ${{ jobs.build.outputs.pipeline_dtrack }}
+
 
 jobs:
   build:
     outputs:
       has_preview: ${{ steps.has_preview.outputs.result == 1 }}
       pipeline_helm: ${{ steps.pipeline_helm.outputs.result == 1 }}
-      pipeline_docker: ${{ steps.pipeline_docker.ouputs.result == 1 }}
+      pipeline_docker: ${{ steps.pipeline_docker.outputs.result == 1 }}
+      pipeline_sonarqube: ${{ steps.disable_sonarqube.outputs.result == 0 }}
+      pipeline_dtrack: ${{ steps.disable_dtrack.outputs.result == 0 }}
     runs-on: ubuntu-latest
     steps:
       # Proceed with checkout of source with all the references (depth=0)  
@@ -97,28 +112,42 @@ jobs:
         id: pipeline_docker
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.pipeline[]' ./cloudopsworks-ci.yaml | grep docker | wc -l
+          cmd: yq eval '.pipeline[]' ./cloudopsworks-ci.yaml | grep docker | wc -l | tr -d " "
 
       # Get pipeline conf
       - name: Get pipeline preview enabled
         id: has_preview
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.cd.preview.enable' ./cloudopsworks-ci.yaml | grep true | wc -l
+          cmd: yq eval '.cd.preview.enable' ./cloudopsworks-ci.yaml | grep true | wc -l | tr -d " "
+
+      # Get Sonarqube Configuration is disabled
+      - name: Get Pipeline conf Sonarqube is Disabled
+        id: disable_sonarqube
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval '.build.sonarqube.enabled' ./cloudopsworks-ci.yaml | grep false | wc -l | tr -d " "
+
+      # Get Sonarqube Configuration is disabled
+      - name: Get Pipeline conf DependencyTrack is Disabled
+        id: disable_dtrack
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval '.build.dependencyTrack.enabled' ./cloudopsworks-ci.yaml | grep false | wc -l | tr -d " "
 
       # Get pipeline conf
       - name: Get pipeline helm enable
         id: pipeline_helm
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.pipeline[]' ./cloudopsworks-ci.yaml | grep helm | wc -l
+          cmd: yq eval '.pipeline[]' ./cloudopsworks-ci.yaml | grep helm | wc -l | tr -d " "
 
       # Get pipeline conf
       - name: Get pipeline zip packaging
         id: pipeline_zip
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.pipeline[]' ./cloudopsworks-ci.yaml | grep zip | wc -l
+          cmd: yq eval '.pipeline[]' ./cloudopsworks-ci.yaml | grep zip | wc -l | tr -d " "
 
       # Get pipeline conf
       - name: Get pipeline zip packaging globs

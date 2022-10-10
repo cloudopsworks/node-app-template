@@ -114,5 +114,12 @@ dist
 # misc
 .DS_Store
 
-# IDES
-.idea*
+# IntelliJ idea
+.idea/
+*.iml
+
+# Eclipse JDT
+.project
+.settings/
+.classpath
+.factorypath

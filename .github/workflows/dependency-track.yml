@@ -56,14 +56,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Get project name
+      - name: Get project name
+        id: project_name
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval '.name' ./package.json
+
       # SBOM generation
       - name: SBOM Generation for Dtrack
-        uses: AppThreat/cdxgen-action@v1
+        uses: CycloneDX/gh-node-module-generatebom@v1
         with:
-          #output: "./reports/bom.xml"
-          projectVersion: ${{ inputs.ref }}
-          serverUrl: ${{ secrets.dependencyTrackUrl }}
-          apiKey: ${{ secrets.dependencyTrackToken }}
+          output: "./reports/bom.xml"
+
+      # SBOM upload
+      - name: SBOM Upload
+        uses: DependencyTrack/gh-upload-sbom@v1.0.0
+        with:
+          autocreate: true
+          projectname: ${{ steps.project_name.outputs.result }}
+          projectversion: ${{ inputs.ref }}
+          serverhostname: ${{ secrets.dependencyTrackUrl }}
+          apikey: ${{ secrets.dependencyTrackToken }}
+          bomfilename: "./reports/bom.xml"
 
       # SBOM generated reports upload
       - uses: actions/upload-artifact@v1

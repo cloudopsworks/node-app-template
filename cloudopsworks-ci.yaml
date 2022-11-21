@@ -21,8 +21,8 @@ excludeGlobs:
   - OWNER*
   - README.md
   - jenkins*
-  - target/
-  - charts/
+  - target/*
+  - charts/*
   - cloudopsworks-ci*
   - skafold*
   - gulpfile*

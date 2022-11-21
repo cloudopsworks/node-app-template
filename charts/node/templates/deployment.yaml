@@ -39,10 +39,12 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{- if .Values.env }}
         env:
 {{- range $pkey, $pval := .Values.env }}
         - name: {{ $pkey }}
           value: {{ quote $pval }}
+{{- end }}
 {{- end }}
 {{- if .Values.envFrom }}
         envFrom:
@@ -69,13 +71,14 @@ spec:
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
         resources:
-{{ toYaml .Values.resources | indent 10 }}
+{{ toYaml .Values.resources | indent 12 }}
+        # Volume mount to mount application run directory
         volumeMounts:
           - name: "dotenv-secret"
             mountPath: "/config"
             readOnly: true
 {{- if .Values.additionalVolumeMounts }}
-{{ toYaml .Values.additionalVolumeMounts | indent 10 }}
+{{ toYaml .Values.additionalVolumeMounts | indent 12 }}
 {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.affinity }}
@@ -91,15 +94,15 @@ spec:
 {{ toYaml .Values.nodeSelector | indent 8 }}
 {{- end }}
       volumes:
-        - name: dotenv-secret
-          secret:
+      - name: dotenv-secret
+        secret:
 {{- if .Values.service.name }}
-            secretName: {{ .Values.service.name }}-portal-environment
+          secretName: {{ .Values.service.name }}-node-environment
 {{- else }}
-            secretName: {{ template "fullname" . }}-portal-environment
+          secretName: {{ template "fullname" . }}-node-environment
 {{- end }}
-            optional: false
-            defaultMode: 0440
+          optional: false
+          defaultMode: 0440
 {{- if .Values.additionalVolumes }}
 {{ toYaml .Values.additionalVolumes | indent 8 }}
 {{- end }}

@@ -3,9 +3,9 @@ apiVersion: v1
 kind: Secret
 metadata:
 {{- if .Values.service.name }}
-  name: {{ .Values.service.name }}-portal-environment
+  name: {{ .Values.service.name }}-node-environment
 {{- else }}
-  name: {{ template "fullname" . }}-portal-environment
+  name: {{ template "fullname" . }}-node-environment
 {{- end }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"

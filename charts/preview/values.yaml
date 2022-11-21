@@ -4,7 +4,7 @@ expose:
     helm.sh/hook: post-install,post-upgrade
     helm.sh/hook-delete-policy: hook-succeeded
   config:
-    domain: 4wrd.tech
+    domain: example.com
     urltemplate: "{{.Service}}-prv.{{.Domain}}"
     exposer: Ingress
     http: "true"
@@ -20,8 +20,8 @@ cleanup:
 
 preview:
   image:
-    repository:
-    tag:
+    repository: 
+    tag: 
     pullPolicy: Always
 
   config:

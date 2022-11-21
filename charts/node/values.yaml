@@ -7,8 +7,11 @@ image:
   tag: dev
   pullPolicy: IfNotPresent
 
+# define environment variables here to took from configmap or secrets
+envFrom: []
+
 # define environment variables here as a map of key: value
-env:
+env: {}
 
 # NodeJS Application configuration secret
 config:
@@ -65,11 +68,14 @@ resources:
     memory: 512Mi
 probePath: /actuator/health
 livenessProbe:
-  initialDelaySeconds: 60
-  periodSeconds: 10
+  scheme: HTTP
+  failureThreshold: 10
+  initialDelaySeconds: 300
+  periodSeconds: 30
   successThreshold: 1
   timeoutSeconds: 1
 readinessProbe:
+  scheme: HTTP
   failureThreshold: 1
   periodSeconds: 10
   successThreshold: 1
@@ -93,9 +99,13 @@ ingress:
   pathType: Prefix
   ingressClass: nginx
   annotations: {}
+  tls:
+    enabled: false
 
+# Jaeger tracing configuration
 tracing:
   enabled: false
+
 # values we use from the `jx-requirements.yml` file if we are using helmfile and helm 3
 jxRequirements:
   ingress:

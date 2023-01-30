@@ -81,12 +81,11 @@ jobs:
 
       # SBOM upload
       - name: SBOM Dtrack Upload
-        uses: cloudopsworks/gh-upload-sbom@master
-        with:
-          serverhostname: ${{ secrets.dependencyTrackUrl }}
-          protocol: https
-          apikey: ${{ secrets.dependencyTrackToken }}
-          projectname: ${{ steps.project_name.outputs.result }}
-          projectversion: ${{ inputs.ref }}
-          autocreate: true
-          bomfilename: "./bom.xml"
+        run: |
+          curl -X "POST" "https://${{ secrets.dependencyTrackUrl }}/api/v1/bom" \
+               -H 'Content-Type: multipart/form-data' \
+               -H 'X-API-Key: ${{ secrets.dependencyTrackToken }}' \
+               -F "autoCreate=true" \
+               -F "projectName=${{ steps.project_name.outputs.result }}" \
+               -F "projectVersion=${{ inputs.ref }}" \
+               -F "bom=@./bom.xml"

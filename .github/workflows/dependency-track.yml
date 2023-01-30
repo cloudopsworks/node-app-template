@@ -63,6 +63,10 @@ jobs:
         with:
           cmd: yq eval '.name' ./package.json
 
+      # Generate node_modules
+      - name: Install Modules
+        run: npm install
+
       # SBOM generation
       - name: SBOM Generation for Dtrack
         uses: CycloneDX/gh-node-module-generatebom@v1

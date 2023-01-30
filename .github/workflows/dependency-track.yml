@@ -73,19 +73,20 @@ jobs:
         with:
           output: "./bom.xml"
 
-      # SBOM upload
-      - name: SBOM Upload
-        uses: DependencyTrack/gh-upload-sbom@v1.0.0
-        with:
-          autocreate: true
-          projectname: ${{ steps.project_name.outputs.result }}
-          projectversion: ${{ inputs.ref }}
-          serverhostname: ${{ secrets.dependencyTrackUrl }}
-          apikey: ${{ secrets.dependencyTrackToken }}
-          bomfilename: "./bom.xml"
-
       # SBOM generated reports upload
       - uses: actions/upload-artifact@v1
         with:
           name: sbom
           path: bom.xml
+
+      # SBOM upload
+      - name: SBOM Dtrack Upload
+        uses: cloudopsworks/gh-upload-sbom@master
+        with:
+          serverhostname: ${{ secrets.dependencyTrackUrl }}
+          protocol: https
+          apikey: ${{ secrets.dependencyTrackToken }}
+          projectname: ${{ steps.project_name.outputs.result }}
+          projectversion: ${{ inputs.ref }}
+          autocreate: true
+          bomfilename: "./bom.xml"

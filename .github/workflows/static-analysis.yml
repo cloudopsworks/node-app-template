@@ -60,13 +60,13 @@ jobs:
         id: project_name
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.name' ./package.json
+          cmd: yq e -oy '.name' ./package.json
       # Get project description
       - name: Get project description
         id: project_description
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.description' ./package.json
+          cmd: yq e -oy '.description' ./package.json
       # Create generic gulp File for process
       - name: Create gulpfile
         run: |

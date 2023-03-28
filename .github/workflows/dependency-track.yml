@@ -61,7 +61,7 @@ jobs:
         id: project_name
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.name' ./package.json
+          cmd: yq eval -oy '.name' ./package.json
 
       # Generate node_modules
       - name: Install Modules

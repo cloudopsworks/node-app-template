@@ -57,7 +57,7 @@ jobs:
           cmd: yq eval '.build.node.dist // "adopt"' ./cloudopsworks-ci.yaml
       # Setup Node JS for builds with version provided
       - name: Set Node Version
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "${{ steps.node_version.outputs.result }}"
           distribution: "${{ steps.node_dist.outputs.result }}"
@@ -65,7 +65,7 @@ jobs:
       - uses: azure/setup-helm@v3
       # Cache all maven packages
       - name: Cache NPM packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}

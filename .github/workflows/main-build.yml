@@ -25,11 +25,12 @@ permissions:
 jobs:
   new_version:
     uses: cloudopsworks/node-app-template/.github/workflows/code-tag.yml@master
-    secrets:
+    with:
       DOCKER_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
       HELM_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
       BOT_USER: ${{ vars.BOT_USER }}
       BOT_EMAIL: ${{ vars.BOT_EMAIL }}
+    secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
 
   build:
@@ -39,14 +40,14 @@ jobs:
     with:
       semver: ${{ needs.new_version.outputs.release_version }} 
       ref: ${{ needs.new_version.outputs.release_tag }}
-    secrets:
       DOCKER_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
       HELM_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
       BOT_USER: ${{ vars.BOT_USER }}
       BOT_EMAIL: ${{ vars.BOT_EMAIL }}
-      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       TARGET_CLOUD: ${{ vars.TARGET_CLOUD }}
       AWS_REGION: ${{ vars.BUILD_AWS_REGION }}
+    secrets:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}
       AZURE_SERVICE_ID: ${{ secrets.AZURE_SERVICE_ID }}
@@ -70,9 +71,9 @@ jobs:
     uses: cloudopsworks/node-app-template/.github/workflows/static-analysis.yml@master
     with:
       ref: ${{ needs.new_version.outputs.release_tag }}
+      sonarqubeUrl: ${{ vars.SONARQUBE_URL }}
     secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      sonarqubeUrl: ${{ vars.SONARQUBE_URL }}
       sonarqubeToken: ${{ secrets.SONARQUBE_TOKEN }}
 
   dependency-track:
@@ -83,9 +84,9 @@ jobs:
     uses: cloudopsworks/node-app-template/.github/workflows/dependency-track.yml@master
     with:
       ref: ${{ needs.new_version.outputs.release_tag }}
+      dependencyTrackUrl: ${{ vars.DEPENDENCYTRACK_URL }}
     secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      dependencyTrackUrl: ${{ vars.DEPENDENCYTRACK_URL }}
       dependencyTrackToken: ${{ secrets.DEPENDENCYTRACK_TOKEN }}
 
   delivery:

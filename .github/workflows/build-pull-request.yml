@@ -25,7 +25,7 @@ jobs:
       - name: extract cloud provider
         id: provider
         env:
-          TARGET: ${{ secrets.TARGET_CLOUD }}
+          TARGET: ${{ vars.TARGET_CLOUD }}
         run: |
           is_azure=0
           is_aws=0
@@ -44,14 +44,14 @@ jobs:
       isRelease: false
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}
       ref: ${{ github.head_ref }}
+      DOCKER_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
+      HELM_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
+      BOT_USER: ${{ vars.BOT_USER }}
+      BOT_EMAIL: ${{ vars.BOT_EMAIL }}
+      TARGET_CLOUD: ${{ vars.TARGET_CLOUD }}
+      AWS_REGION: ${{ vars.BUILD_AWS_REGION }}
     secrets:
-      DOCKER_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-      HELM_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-      BOT_USER: ${{ secrets.BOT_USER }}
-      BOT_EMAIL: ${{ secrets.BOT_EMAIL }}
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
-      AWS_REGION: ${{ secrets.BUILD_AWS_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_AWS_SECRET_ACCESS_KEY }}
       AZURE_SERVICE_ID: ${{ secrets.AZURE_SERVICE_ID }}
@@ -67,16 +67,16 @@ jobs:
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}
       ref: ${{ github.head_ref }}
       pr_name: pr${{ github.event.pull_request.number }}
+      DOCKER_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
+      HELM_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
+      BOT_USER: ${{ vars.BOT_USER }}
+      BOT_EMAIL: ${{ vars.BOT_EMAIL }}
+      AZ_AKS_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+      AZ_AKS_CLUSTER_NAME: ${{ secrets.AZURE_AKS_CLUSTER_NAME }}
     secrets:
-      DOCKER_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-      HELM_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-      BOT_USER: ${{ secrets.BOT_USER }}
-      BOT_EMAIL: ${{ secrets.BOT_EMAIL }}
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       AZURE_SERVICE_ID: ${{ secrets.AZURE_SERVICE_ID }}
       AZURE_SERVICE_SECRET: ${{ secrets.AZURE_SERVICE_SECRET }}
-      AZ_AKS_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-      AZ_AKS_CLUSTER_NAME: ${{ secrets.AZURE_AKS_CLUSTER_NAME }}
       AZ_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
   preview-aws:
@@ -89,17 +89,17 @@ jobs:
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}
       ref: ${{ github.head_ref }}
       pr_name: pr${{ github.event.pull_request.number }}
+      DOCKER_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
+      HELM_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
+      BOT_USER: ${{ vars.BOT_USER }}
+      BOT_EMAIL: ${{ vars.BOT_EMAIL }}
+      TARGET_CLOUD: ${{ vars.TARGET_CLOUD }}
+      AWS_REGION: ${{ vars.PREVIEW_AWS_REGION }}
+      AWS_EKS_CLUSTER_NAME: ${{ vars.PREVIEW_AWS_EKS_CLUSTER_NAME }}
     secrets:
-      DOCKER_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-      HELM_REGISTRY_ADDRESS: ${{ secrets.DOCKER_REGISTRY_ADDRESS }}
-      BOT_USER: ${{ secrets.BOT_USER }}
-      BOT_EMAIL: ${{ secrets.BOT_EMAIL }}
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      TARGET_CLOUD: ${{ secrets.TARGET_CLOUD }}
-      AWS_REGION: ${{ secrets.PREVIEW_AWS_REGION }}
       AWS_ACCESS_KEY_ID: ${{ secrets.PREVIEW_AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.PREVIEW_AWS_SECRET_ACCESS_KEY }}
-      AWS_EKS_CLUSTER_NAME: ${{ secrets.AWS_EKS_CLUSTER_NAME }}
 
   static-analysis:
     needs:
@@ -108,9 +108,9 @@ jobs:
     uses: cloudopsworks/node-app-template/.github/workflows/static-analysis.yml@master
     with:
       ref: ${{ github.head_ref }}
+      sonarqubeUrl: ${{ vars.SONARQUBE_URL }}
     secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      sonarqubeUrl: ${{ secrets.SONARQUBE_URL }}
       sonarqubeToken: ${{ secrets.SONARQUBE_TOKEN }}
 
   dependency-track:
@@ -120,7 +120,7 @@ jobs:
     uses: cloudopsworks/node-app-template/.github/workflows/dependency-track.yml@master
     with:
       ref: ${{ github.head_ref }}
+      dependencyTrackUrl: ${{ vars.DEPENDENCYTRACK_URL }}
     secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      dependencyTrackUrl: ${{ secrets.DEPENDENCYTRACK_URL }}
       dependencyTrackToken: ${{ secrets.DEPENDENCYTRACK_TOKEN }}

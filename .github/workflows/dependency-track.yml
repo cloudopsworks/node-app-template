@@ -10,11 +10,11 @@ on:
       ref:
         required: true
         type: string
+      dependencyTrackUrl:
+        required: true
 
     secrets:
       BOT_TOKEN:
-        required: true
-      dependencyTrackUrl:
         required: true
       dependencyTrackToken:
         required: true
@@ -82,7 +82,7 @@ jobs:
       # SBOM upload
       - name: SBOM Dtrack Upload
         run: |
-          curl -X "POST" "https://${{ secrets.dependencyTrackUrl }}/api/v1/bom" \
+          curl -X "POST" "https://${{ inputs.dependencyTrackUrl }}/api/v1/bom" \
                -H 'Content-Type: multipart/form-data' \
                -H 'X-API-Key: ${{ secrets.dependencyTrackToken }}' \
                -F "autoCreate=true" \

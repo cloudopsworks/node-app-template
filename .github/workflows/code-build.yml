@@ -100,7 +100,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "${{ steps.node_version.outputs.result }}"
-          distribution: "${{ steps.node_dist.outputs.result }}"
+          check-latest: true
+          token: ${{ secrets.BOT_TOKEN }}
       # Helm Chart build & deploy Support
       - uses: azure/setup-helm@v3
         with:
@@ -120,7 +121,7 @@ jobs:
         id: pipeline_docker
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.pipeline[]' ./cloudopsworks-ci.yaml | grep docker | wc -l | tr -d " "
+          cmd: yq eval '.pipeline[]' ./cloudopsworks-ci.yaml | grep docker | wc -l | tr -d ' "
 
       # Get pipeline conf
       - name: Get pipeline preview enabled
@@ -326,7 +327,7 @@ jobs:
       # Perform of upload artfiacts
       - name: Upload Artifacts to workflow
         if: inputs.isRelease
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: all-artifacts
           path: |

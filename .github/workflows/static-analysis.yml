@@ -47,7 +47,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "${{ steps.node_version.outputs.result }}"
-          distribution: "${{ steps.node_dist.outputs.result }}"
+          check-latest: true
+          token: ${{ secrets.BOT_TOKEN }}
       # Cache all NPM packages
       - name: Cache NPM packages
         uses: actions/cache@v3

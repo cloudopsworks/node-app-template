@@ -116,7 +116,7 @@ jobs:
       # Create ChangeLog file into main directory for commit case of Release
       - name: Generate changelog
         id: changelog
-        uses: metcalfc/changelog-generator@v3.0.0
+        uses: actions/cache@v3
         with:
           myToken: ${{ secrets.BOT_TOKEN }}
           base-ref: '${{ steps.previoustag.outputs.tag }}'

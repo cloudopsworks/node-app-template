@@ -13,14 +13,20 @@ on:
         value: ${{ jobs.tag_version.outputs.release_version }}
       release_tag:
         value: ${{ jobs.tag_version.outputs.release_tag }}
+
+    inputs:
       DOCKER_REGISTRY_ADDRESS:
         required: true
+        type: string
       HELM_REGISTRY_ADDRESS:
         required: true
+        type: string
       BOT_USER:
         required: true
+        type: string
       BOT_EMAIL:
         required: true
+        type: string
 
     secrets:
       BOT_TOKEN:

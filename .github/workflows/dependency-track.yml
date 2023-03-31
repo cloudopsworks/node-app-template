@@ -12,6 +12,7 @@ on:
         type: string
       dependencyTrackUrl:
         required: true
+        type: string
 
     secrets:
       BOT_TOKEN:

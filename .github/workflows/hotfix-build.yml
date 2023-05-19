@@ -11,6 +11,7 @@ on:
       - hotfix-*
     types:
       - closed
+  workflow_dispatch:
 
 # Permission Settings for the entire RUN
 permissions:

@@ -30,7 +30,7 @@ jobs:
       - name: Version Extract
         id: version
         run: |
-          echo "ver=$(echo ${{ github.ref }} | sed -En 's/.*(-|v)?([0-9]+\.[0-9]+\.[0-9]+\-.+)$/\2/p')" >> $GITHUB_ENV
+          echo "ver=$(echo ${{ github.ref }} | sed -En 's/.*(-|v)?([0-9]+\.[0-9]+\.[0-9]+\-.+)$/\2/p')" >> $GITHUB_OUTPUT
 
   new_version:
     needs:

@@ -125,7 +125,7 @@ jobs:
       - name: Set Version File for a Release
         if: inputs.isAuto == false
         env:
-          NEXT_VERSION: "${{ input.tagRelease }}"
+          NEXT_VERSION: "${{ inputs.tagRelease }}"
         run: |
           echo -n "$NEXT_VERSION" > VERSION
 

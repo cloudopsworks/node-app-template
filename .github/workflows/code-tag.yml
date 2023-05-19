@@ -27,6 +27,13 @@ on:
       BOT_EMAIL:
         required: true
         type: string
+      isAuto:
+        required: false
+        type: boolean
+        default: true
+      tagRelease:
+        required: false
+        type: string
 
     secrets:
       BOT_TOKEN:
@@ -36,7 +43,7 @@ jobs:
   tag_version:
     runs-on: ubuntu-latest
     outputs:
-      release_version: ${{ steps.semvers.outputs.patch }}
+      release_version: ${{ steps.tagged.outputs.tag_version }}
       release_tag: ${{ steps.tagged.outputs.tag_name }}
     steps:
       - uses: actions/checkout@v3
@@ -106,10 +113,19 @@ jobs:
         with:
           version: "${{ steps.previoustag.outputs.tag }}"
 
-      # Create a VERSION file to use through the build
+      # Create a VERSION file to use through the build - Auto Release
       - name: Set Version File for a Release
+        if: inputs.isAuto == true
         env:
           NEXT_VERSION: "${{ steps.semvers.outputs.patch }}"
+        run: |
+          echo -n "$NEXT_VERSION" > VERSION
+
+      # Create a VERSION file to use through the build - Manual Release
+      - name: Set Version File for a Release
+        if: inputs.isAuto == false
+        env:
+          NEXT_VERSION: "${{ input.tagRelease }}"
         run: |
           echo -n "$NEXT_VERSION" > VERSION
 
@@ -155,4 +171,5 @@ jobs:
           git commit -m "chore: release version v$VERSION"
           git tag -fa v$VERSION -m "Release Version v$VERSION"
           git push origin --tags -f
+          echo "tag_version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag_name=v$VERSION" >> $GITHUB_OUTPUT

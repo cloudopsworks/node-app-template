@@ -25,12 +25,12 @@ jobs:
   check_hotfix:
     runs-on: ubuntu-latest
     outputs:
-      hotfix_version: ${{ steps.check_hotfix.outputs.hotfix_version }}
+      hotfix_version: ${{ steps.version.outputs.ver }}
     steps:
       - name: Version Extract
-        id: check_hotfix
+        id: version
         run: |
-          echo "hotfix_version=$(echo ${{ github.ref }} | sed -En 's/.*(-|v)?([0-9]+\.[0-9]+\.[0-9]+\-.+)$/\2/p')" >> $GITHUB_ENV
+          echo "ver=$(echo ${{ github.ref }} | sed -En 's/.*(-|v)?([0-9]+\.[0-9]+\.[0-9]+\-.+)$/\2/p')" >> $GITHUB_ENV
 
   new_version:
     needs:
@@ -51,7 +51,7 @@ jobs:
       - new_version
     uses: cloudopsworks/node-app-template/.github/workflows/code-build.yml@master
     with:
-      isRelease: false
+      isHotfix: true
       semver: ${{ needs.new_version.outputs.release_version }}
       ref: ${{ needs.new_version.outputs.release_tag }}
       DOCKER_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}

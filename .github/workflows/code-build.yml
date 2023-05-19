@@ -12,6 +12,10 @@ on:
         default: true
         required: false
         type: boolean
+      isHotfix:
+        default: false
+        required: false
+        type: boolean
       ref:
         default: ''
         required: false

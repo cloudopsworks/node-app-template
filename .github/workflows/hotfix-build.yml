@@ -42,7 +42,7 @@ jobs:
       BOT_USER: ${{ vars.BOT_USER }}
       BOT_EMAIL: ${{ vars.BOT_EMAIL }}
       isAuto: false
-      tagRelease: {{ needs.check_hotfix.outputs.hotfix_version }}
+      tagRelease: ${{ needs.check_hotfix.outputs.hotfix_version }}
     secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
 

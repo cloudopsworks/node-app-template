@@ -7,6 +7,12 @@ name: Dependency Track Analysis
 on:
   workflow_call:
     inputs:
+      projectName:
+        required: true
+        type: string
+      projectType:
+        required: true
+        type: string
       ref:
         required: true
         type: string

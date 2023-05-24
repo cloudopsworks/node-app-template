@@ -13,6 +13,10 @@ on:
         value: ${{ jobs.tag_version.outputs.release_version }}
       release_tag:
         value: ${{ jobs.tag_version.outputs.release_tag }}
+      owner:
+        value: ${{ jobs.tag_version.outputs.owner }}
+      project_name:
+        value: ${{ jobs.tag_version.outputs.project_name }}
 
     inputs:
       DOCKER_REGISTRY_ADDRESS:
@@ -43,6 +47,8 @@ jobs:
   tag_version:
     runs-on: ubuntu-latest
     outputs:
+      owner: ${{ steps.getowner.outputs.owner }}
+      project_name: ${{ steps.getowner.outputs.repo_name }}
       release_version: ${{ steps.tagged.outputs.tag_version }}
       release_tag: ${{ steps.tagged.outputs.tag_name }}
     steps:

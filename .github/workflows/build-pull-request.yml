@@ -16,6 +16,20 @@ permissions:
   checks: write
 
 jobs:
+  project_data:
+    runs-on: ubuntu-latest
+    outputs:
+      project_name: ${{ steps.getowner.outputs.repo_name }}
+    steps:
+      # Get the owner repo
+      - name: Get owner
+        id: getowner
+        run: |
+          repo_owner=`echo "$GITHUB_REPOSITORY" | cut -f 1 -d "/"`
+          repo_name=`echo "$GITHUB_REPOSITORY" | cut -f 2 -d "/"`
+          echo "owner=$repo_owner" >> $GITHUB_OUTPUT
+          echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
+
   target_cloud:
     runs-on: ubuntu-latest
     outputs:
@@ -61,7 +75,7 @@ jobs:
     needs:
       - target_cloud
       - build
-    if: needs.target_cloud.outputs.is_azure == 1
+    if: needs.target_cloud.outputs.is_azure == 1 && needs.build.outputs.has_preview
     uses: cloudopsworks/base-app-template/.github/workflows/preview-azure.yml@master
     with:
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}
@@ -71,19 +85,19 @@ jobs:
       HELM_REGISTRY_ADDRESS: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
       BOT_USER: ${{ vars.BOT_USER }}
       BOT_EMAIL: ${{ vars.BOT_EMAIL }}
-      AZ_AKS_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-      AZ_AKS_CLUSTER_NAME: ${{ vars.AZURE_AKS_CLUSTER_NAME }}
+      AZ_AKS_CLUSTER_NAME: ${{ vars.PREVIEW_AZURE_AKS_CLUSTER_NAME }}
+      AZ_AKS_RESOURCE_GROUP: ${{ vars.PREVIEW_AZURE_RESOURCE_GROUP }}
     secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-      AZURE_SERVICE_ID: ${{ secrets.AZURE_SERVICE_ID }}
-      AZURE_SERVICE_SECRET: ${{ secrets.AZURE_SERVICE_SECRET }}
-      AZ_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_SERVICE_ID: ${{ secrets.PREVIEW_AZURE_SERVICE_ID }}
+      AZURE_SERVICE_SECRET: ${{ secrets.PREVIEW_AZURE_SERVICE_SECRET }}
+      AZ_CREDENTIALS: ${{ secrets.PREVIEW_AZURE_CREDENTIALS }}
 
   preview-aws:
     needs:
       - target_cloud
       - build
-    if: needs.target_cloud.outputs.is_aws == 1
+    if: needs.target_cloud.outputs.is_aws == 1 && needs.build.outputs.has_preview
     uses: cloudopsworks/base-app-template/.github/workflows/preview-aws.yml@master
     with:
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}
@@ -94,8 +108,8 @@ jobs:
       BOT_USER: ${{ vars.BOT_USER }}
       BOT_EMAIL: ${{ vars.BOT_EMAIL }}
       TARGET_CLOUD: ${{ vars.TARGET_CLOUD }}
-      AWS_REGION: ${{ vars.PREVIEW_AWS_REGION }}
       AWS_EKS_CLUSTER_NAME: ${{ vars.PREVIEW_AWS_EKS_CLUSTER_NAME }}
+      AWS_REGION: ${{ vars.PREVIEW_AWS_REGION }}
     secrets:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.PREVIEW_AWS_ACCESS_KEY_ID }}
@@ -116,9 +130,12 @@ jobs:
   dependency-track:
     needs:
       - build
+      - project_data
     if: needs.build.outputs.pipeline_dtrack
     uses: cloudopsworks/node-app-template/.github/workflows/dependency-track.yml@master
     with:
+      projectName: ${{ needs.project_data.outputs.project_name }}
+      projectType: ${{ needs.build.outputs.pipeline_dtrack_project_type }}
       ref: ${{ github.head_ref }}
       dependencyTrackUrl: ${{ vars.DEPENDENCYTRACK_URL }}
     secrets:

@@ -10,9 +10,11 @@ LICENSE
 README.md
 OWNERS
 OWNERS_ALIASES
-jenkins-x.yml
-skaffold.yaml
+jenkins-x*.*
+skaffold.*
 .helmignore
 .git*
 gulpfile.js
 sonar-project.properties
+tronador/
+.tronador

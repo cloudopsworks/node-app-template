@@ -202,6 +202,13 @@ jobs:
         with:
           cmd: yq eval '.excludeGlobs[]' ./cloudopsworks-ci.yaml
 
+      # Get pipeline conf target environment
+      - name: Get pipeline target environment
+        id: cdenv_enabled
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval '.cd.env != null' ./cloudopsworks-ci.yaml
+
       # Get the owner repo
       - name: Get owner
         id: getowner

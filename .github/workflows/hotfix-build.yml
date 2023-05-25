@@ -81,7 +81,7 @@ jobs:
     needs:
       - build
       - new_version
-    if: needs.build.outputs.pipeline_sonarqube
+    if: ${{ needs.build.outputs.pipeline_sonarqube == 'true' }}
     uses: cloudopsworks/node-app-template/.github/workflows/static-analysis.yml@master
     with:
       ref: ${{ needs.new_version.outputs.release_tag }}
@@ -94,9 +94,11 @@ jobs:
     needs:
       - build
       - new_version
-    if: needs.build.outputs.pipeline_dtrack
+    if: ${{ needs.build.outputs.pipeline_dtrack == 'true' }}
     uses: cloudopsworks/node-app-template/.github/workflows/dependency-track.yml@master
     with:
+      projectName: ${{ needs.new_version.outputs.project_name }}
+      projectType: ${{ needs.build.outputs.pipeline_dtrack_project_type }}
       ref: ${{ needs.new_version.outputs.release_tag }}
       dependencyTrackUrl: ${{ vars.DEPENDENCYTRACK_URL }}
     secrets:

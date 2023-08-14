@@ -16,5 +16,6 @@ skaffold.*
 .git*
 gulpfile.js
 sonar-project.properties
+# CloudOpsWorks Tronador
 tronador/
 .tronador

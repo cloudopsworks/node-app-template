@@ -61,7 +61,7 @@ jobs:
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version // "14"' ./cloudopsworks-ci.yaml
+          cmd: yq eval '.build.node.version // "18"' ./cloudopsworks-ci.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist

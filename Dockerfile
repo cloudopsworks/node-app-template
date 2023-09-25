@@ -3,7 +3,7 @@
 #            On GitHub: https://github.com/cloudopsworks
 #            Distributed Under Apache v2.0 License
 #
-FROM node:14-slim
+FROM node:18-slim
 EXPOSE 8081
 EXPOSE 8443
 

@@ -35,7 +35,7 @@ jobs:
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version // "14"' ./cloudopsworks-ci.yaml
+          cmd: yq eval '.build.node.version // "18"' ./cloudopsworks-ci.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
@@ -57,6 +57,10 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      # Run versioning to tag the source
+      - name: Run Versioning setup
+        run: make version
+
       # Get project name
       - name: Get project name
         id: project_name

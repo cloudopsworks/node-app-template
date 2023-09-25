@@ -1,0 +1,83 @@
+##
+# (c) 2023 - Cloud Ops Works LLC - https://cloudops.works/
+#            On GitHub: https://github.com/cloudopsworks
+#            Distributed Under Apache v2.0 License
+#
+name: CD Data Workflow Template
+
+on:
+  workflow_call:
+    outputs:
+      environment:
+        value: ${{ jobs.data.outputs.environment }}
+      isRelease:
+        value: ${{ jobs.data.outputs.isRelease }}
+      isPreRelease:
+        value: ${{ jobs.data.outputs.isPreRelease }}
+      targetName:
+        value: ${{ jobs.data.outputs.targetName }}
+
+jobs:
+  data:
+    outputs:
+      environment: ${{ steps.workspace.outputs.workspace }}
+      isRelease: ${{ steps.workspace.outputs.isRelease }}
+      isPreRelease: ${{ steps.workspace.outputs.isPreRelease }}
+      targetName: ${{ steps.workspace.outputs.targetName }}
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.BOT_TOKEN }}
+
+      # Get the deployments configuration
+      - name: Get the deployments configuration
+        id: deploy_conf
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -o=json -I=0 '.cd.deployments' cloudopsworks-ci.yaml
+
+      # Set the appropriate workspace from what is configured from the deploy_conf step
+      # Result is stored as JSON with the format found on the cd.deployments section on cloudopsworks-ci.yaml
+      - name: Set the appropriate workspace
+        id: workspace
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const deployments = JSON.parse('${{ steps.deploy_conf.outputs.result }}');
+            const branch = '${{ github.ref_name }}';
+
+            var environment;
+            var isRelease = false;
+            var isPreRelease = false;
+            var targetName = '';
+            if ( branch.startsWith('support') ) {
+              const oneMatch = deployments.support.find( ({ match }) => branch.match(new RegExp('support/'+match,'g')) );
+              environment = oneMatch.env;
+              targetName = oneMatch.targetName;
+            } else if ( branch.startsWith('release') || branch.match(/^v[0-9]+\.[0-9]+\.[0-9]+-.*[-\.].*/) ) {            
+              // Regular expression to match following semver pattern: v1.0.2-alpha.10-uoiretu834u
+              isPreRelease = true;
+              environment = deployments.release.env;
+            } else if ( branch === 'develop' ) {
+              environment = deployments.develop.env;
+            } else if ( branch === 'main' || branch === 'master' || branch.match(/^v[0-9]+\.[0-9]+\.[0-9]+$/) ) {
+              isRelease = true;
+              environment = deployments.main.env;
+            } else {
+              core.setFailed('Branch not supported');
+            }
+            const outputV = { 
+              environment: environment, 
+              isPreRelease: isPreRelease, 
+              isRelease: isRelease,
+              targetName: targetName
+            }; 
+            core.setOutput('workspace', environment);
+            core.setOutput('isRelease', isRelease);
+            core.setOutput('isPreRelease', isPreRelease);
+            core.setOutput('targetName', targetName);
+
+            return outputV;

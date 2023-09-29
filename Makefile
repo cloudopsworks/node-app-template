@@ -36,7 +36,6 @@ endif
 
 ## Code Initialization for Node Project
 code/init: charts/init
-	# modify the package.json file to add the project name automatically
 ifeq ($(OS),darwin)
 	@sed -i '' -e "s/\"name\": \".*\"/\"name\": \"$(PROJECT)\"/g" package.json
 else ifeq ($(OS),linux)

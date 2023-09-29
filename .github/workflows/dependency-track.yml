@@ -13,9 +13,9 @@ on:
       projectType:
         required: true
         type: string
-      ref:
-        required: true
-        type: string
+#      ref:
+#        required: true
+#        type: string
       dependencyTrackUrl:
         required: true
         type: string

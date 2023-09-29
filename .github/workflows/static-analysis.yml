@@ -7,9 +7,9 @@ name: Static Analysis Process
 on:
   workflow_call:
     inputs:
-      ref:
-        required: true
-        type: string
+#      ref:
+#        required: true
+#        type: string
       sonarqubeUrl:
         required: true
         type: string

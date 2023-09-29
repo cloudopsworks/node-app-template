@@ -27,17 +27,21 @@ endif
 charts/init:
 	@cp -r charts/node charts/$(PROJECT)
 ifeq ($(OS),darwin)
-	@sed -i '' -e "s|  repository: .*$$|  repository: file://../$(PROJECT)|g" charts/preview/requirements.yaml
+	@sed -i '' -e "s|  repository: file.*$$|  repository: file://../$(PROJECT)|g" charts/preview/requirements.yaml
 	@sed -i '' -e "s/^name: .*$$/name: $(PROJECT)/g" charts/$(PROJECT)/Chart.yaml
 else ifeq ($(OS),linux)
-	@sed -i -e "s|  repository: .*$$|  repository: file://../$(PROJECT)|g" charts/preview/requirements.yaml
+	@sed -i -e "s|  repository: file.*$$|  repository: file://../$(PROJECT)|g" charts/preview/requirements.yaml
 	@sed -i -e "s/^name: .*$$/name: $(PROJECT)/g" charts/$(PROJECT)/Chart.yaml
 endif
 
+# Modify package.json to change the project name with the $(PROJECT) variable
 ## Code Initialization for Node Project
-code/init: charts/init
+code/init: charts/init packages/install/gitversion
+	$(call assert-set,GITVERSION)
 ifeq ($(OS),darwin)
 	@sed -i '' -e "s/\"name\": \".*\"/\"name\": \"$(PROJECT)\"/g" package.json
+	@sed -i '' -e "s/\"version\": \".*\"/\"version\": \"$(shell $(GITVERSION) -output json -showvariable SemVer | tr '+' '-')\"/g" package.json
 else ifeq ($(OS),linux)
 	@sed -i -e "s/\"name\": \".*\"/\"name\": \"$(PROJECT)\"/g" package.json
+	@sed -i -e "s/\"version\": \".*\"/\"version\": \"$(shell $(GITVERSION) -output json -showvariable SemVer | tr '+' '-')\"/g" package.json
 endif

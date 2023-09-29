@@ -13,6 +13,9 @@ on:
       projectType:
         required: true
         type: string
+      semver:
+        required: false
+        type: string
 #      ref:
 #        required: true
 #        type: string
@@ -31,11 +34,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Proceed with checkout of source with all the references (depth=0)
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.BOT_TOKEN }}
-          ref: ${{ inputs.ref }}
+          #ref: ${{ inputs.ref }}
       # Get pipeline conf node version
       - name: Get pipeline node version
         id: node_version
@@ -85,7 +88,7 @@ jobs:
           output: "./bom.xml"
 
       # SBOM generated reports upload
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: sbom
           path: bom.xml
@@ -98,5 +101,5 @@ jobs:
                -H 'X-API-Key: ${{ secrets.dependencyTrackToken }}' \
                -F "autoCreate=true" \
                -F "projectName=${{ steps.project_name.outputs.result }}" \
-               -F "projectVersion=${{ inputs.ref }}" \
+               -F "projectVersion=${{ inputs.semver }}" \
                -F "bom=@./bom.xml"

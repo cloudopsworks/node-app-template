@@ -3,7 +3,8 @@
 #            On GitHub: https://github.com/cloudopsworks
 #            Distributed Under Apache v2.0 License
 #
-# Logs
+
+# Log file
 logs
 *.log
 npm-debug.log*
@@ -124,6 +125,9 @@ dist
 .classpath
 .factorypath
 
-# CloudOpsWorks Tronador
+### VS Code ###
+.vscode/
+
+### Tronador ###
 tronador/
 .tronador

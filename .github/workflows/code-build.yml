@@ -64,7 +64,9 @@ on:
       semver:
         description: "Semver Output calculated on Build"
         value: ${{ jobs.build.outputs.semver }}
-
+      package_name:
+        description: "Package Name Output calculated on Build"
+        value: ${{ jobs.build.outputs.package_name }}
 
 jobs:
   build:
@@ -76,6 +78,7 @@ jobs:
       pipeline_dtrack: ${{ steps.disable_dtrack.outputs.result == 0 }}
       pipeline_dtrack_project_type: ${{ steps.dtrack_project_type.outputs.type }}
       semver: ${{ steps.semver.outputs.version }}
+      package_name: ${{ steps.package_name.outputs.result }}
     runs-on: ubuntu-latest
     steps:
       # Proceed with checkout of source with all the references (depth=0)  
@@ -217,6 +220,13 @@ jobs:
           REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
           REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
         run: make helm/version
+
+      # Get Package Name from package.json
+      - name: Get package Name
+        id: package_name
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -oj -r '.name' package.json
 
       # Edit package.json in order to include repository for automatic linking
       - name: Package.JSON - REPO auto link

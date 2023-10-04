@@ -1,0 +1,13 @@
+Dockerfile
+.helmignore
+.dockerignore
+.git*
+.git/
+OWNER*
+README.md
+jenkins*
+target/*
+charts/*
+cloudopsworks-ci*
+skafold*
+gulpfile*

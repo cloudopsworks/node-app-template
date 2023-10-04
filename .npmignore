@@ -11,3 +11,29 @@ charts/*
 cloudopsworks-ci*
 skafold*
 gulpfile*
+# misc
+.DS_Store
+Makefile*
+*.log
+*.log.*
+
+
+# IntelliJ idea
+.idea/
+*.iml
+
+# Eclipse JDT
+.project
+.settings/
+.classpath
+.factorypath
+
+### VS Code ###
+.vscode/
+
+### Tronador ###
+tronador/
+.tronador
+
+### Node ,envs ###
+.env*

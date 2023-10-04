@@ -241,6 +241,10 @@ jobs:
       - name: Test Code
         run: CI=true DISPLAY=:99 npm test
 
+      # Remove .gitignore for packaging
+      - name: Remove .gitignore
+        run: rm .gitignore
+
       # Deploy Code to Registry
       - name: Deploy Code to Registy
         uses: JS-DevTools/npm-publish@v2

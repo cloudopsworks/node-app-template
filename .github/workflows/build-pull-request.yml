@@ -131,7 +131,7 @@ jobs:
   static-analysis:
     needs:
       - build
-    if: needs.build.outputs.pipeline_sonarqube
+    if: needs.build.outputs.pipeline_sonarqube == 1
     uses: ./.github/workflows/static-analysis.yml
     with:
       #ref: ${{ github.head_ref }}

@@ -243,7 +243,7 @@ jobs:
 
       # Deploy Code to Registry
       - name: Deploy Code to Registy
-        uses: JS-DevTools/npm-publish@v2
+        uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.BOT_TOKEN }}
           registry: "https://npm.pkg.github.com"

@@ -37,3 +37,6 @@ tronador/
 
 ### Node ,envs ###
 .env*
+
+### Do Not Ignores ###
+!node_modules/

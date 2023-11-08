@@ -89,6 +89,7 @@ jobs:
           gulp.task('default', function(callback) {
             sonarqubeScanner({
               serverUrl : sonarUrl,
+              login : sonarToken,
               token : sonarToken,
               options : {
                 "sonar.projectKey": "${{ steps.project_name.outputs.result }}",

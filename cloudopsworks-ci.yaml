@@ -111,6 +111,7 @@ cd:
   # Previews are run on pull requests from hotfix/** or feature/** branches into any of the development / main branches
   deployments:
     develop:
+      #enabled: false
       env: dev
       #targetName: dev-target
     release:
@@ -121,9 +122,11 @@ cd:
           env: prod-my-target
           targetName: prod-my-target
     test:
+      #enabled: false
       env: uat
       #targetName: uat-target
     prerelease:
+      #enabled: false
       env: demo
       #targetName: demo-target
       targets:

@@ -3,7 +3,7 @@
 #            On GitHub: https://github.com/cloudopsworks
 #            Distributed Under Apache v2.0 License
 #
-name: Code Build Workflow Template
+name: Code Version Extraction
 
 on:
   workflow_call:

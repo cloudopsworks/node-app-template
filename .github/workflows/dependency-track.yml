@@ -13,9 +13,12 @@ on:
       projectType:
         required: true
         type: string
-      ref:
-        required: true
+      semver:
+        required: false
         type: string
+#      ref:
+#        required: true
+#        type: string
       dependencyTrackUrl:
         required: true
         type: string
@@ -31,17 +34,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Proceed with checkout of source with all the references (depth=0)
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.BOT_TOKEN }}
-          ref: ${{ inputs.ref }}
+          #ref: ${{ inputs.ref }}
       # Get pipeline conf node version
       - name: Get pipeline node version
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version // "14"' ./cloudopsworks-ci.yaml
+          cmd: yq eval '.build.node.version // "18"' ./cloudopsworks-ci.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
@@ -63,13 +66,16 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      # Run versioning to tag the source
+      - name: Run Versioning setup
+        run: make version
 
-      # Get project name
+      # Get project name with yq in the process strip starting @ if exists and change any / to _
       - name: Get project name
         id: project_name
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval -oy '.name' ./package.json
+          cmd: yq e -oy '.name | sub("^@","") | sub("/","_")' ./package.json
 
       # Generate node_modules
       - name: Install Modules
@@ -82,7 +88,7 @@ jobs:
           output: "./bom.xml"
 
       # SBOM generated reports upload
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: sbom
           path: bom.xml
@@ -95,5 +101,5 @@ jobs:
                -H 'X-API-Key: ${{ secrets.dependencyTrackToken }}' \
                -F "autoCreate=true" \
                -F "projectName=${{ steps.project_name.outputs.result }}" \
-               -F "projectVersion=${{ inputs.ref }}" \
+               -F "projectVersion=${{ inputs.semver }}" \
                -F "bom=@./bom.xml"

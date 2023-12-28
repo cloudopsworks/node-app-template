@@ -1,9 +1,10 @@
 {
   "name": "node-app",
-  "version" : "0.0.0-SNAPSHOT",
+  "version": "0.0.0-SNAPSHOT",
   "description": "Node Application Template",
   "engines": {
-    "node": "14.19.0"
+    "node": ">= 18",
+    "npm": ">= 9"
   },
   "dependencies": {},
   "scripts": {},

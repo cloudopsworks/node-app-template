@@ -7,8 +7,11 @@ name: Static Analysis Process
 on:
   workflow_call:
     inputs:
-      ref:
-        required: true
+#      ref:
+#        required: true
+#        type: string
+      semver:
+        required: false
         type: string
       sonarqubeUrl:
         required: true
@@ -25,17 +28,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Proceed with checkout of source with all the references (depth=0)  
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.BOT_TOKEN }}
-          ref: ${{ inputs.ref }}
+          #ref: ${{ inputs.ref }}
       # Get pipeline conf node version
       - name: Get pipeline node version
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version // "14"' ./cloudopsworks-ci.yaml
+          cmd: yq eval '.build.node.version // "18"' ./cloudopsworks-ci.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
@@ -57,12 +60,17 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      # Get project name
+      # Run versioning to tag the source
+      - name: Run Versioning setup
+        run: make version
+
+      # Get project name with yq in the process strip starting @ if exists and change any / to _
       - name: Get project name
         id: project_name
         uses: mikefarah/yq@master
         with:
-          cmd: yq e -oy '.name' ./package.json
+          cmd: yq e -oy '.name | sub("^@","") | sub("/","_")' ./package.json
+
       # Get project description
       - name: Get project description
         id: project_description
@@ -81,6 +89,7 @@ jobs:
           gulp.task('default', function(callback) {
             sonarqubeScanner({
               serverUrl : sonarUrl,
+              login : sonarToken,
               token : sonarToken,
               options : {
                 "sonar.projectKey": "${{ steps.project_name.outputs.result }}",

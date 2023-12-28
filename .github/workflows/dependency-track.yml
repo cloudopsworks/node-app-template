@@ -70,12 +70,12 @@ jobs:
       - name: Run Versioning setup
         run: make version
 
-      # Get project name
+      # Get project name with yq in the process strip starting @ if exists and change any / to _
       - name: Get project name
         id: project_name
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval -oy '.name' ./package.json
+          cmd: yq e -oy '.name | sub("^@","") | sub("/","_")' ./package.json
 
       # Generate node_modules
       - name: Install Modules

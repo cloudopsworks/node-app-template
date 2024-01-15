@@ -40,3 +40,6 @@ tronador/
 
 ### Do Not Ignores ###
 !node_modules/
+!package-lock.json
+!yarn.lock
+!.npmrc

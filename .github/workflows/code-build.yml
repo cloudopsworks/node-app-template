@@ -248,6 +248,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           registry: "https://npm.pkg.github.com"
           strategy: "all"
+          access: "restricted"
       #
       # Docker Build login Azure
       - name: Docker Login Azure

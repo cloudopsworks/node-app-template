@@ -77,10 +77,22 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: yq e -oy '.description' ./package.json
+
+      # Get project type
+      - name: Get project description
+        id: project_type
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -oy '.type' ./package.json
+
       # Create generic gulp File for process
       - name: Create gulpfile
         run: |
-          cat > gulpfile.js << EOF
+          ext=js
+          if [ "${{ steps.project_type.outputs.result }}" == "module" ]; then
+            ext=cjs
+          fi
+          cat > gulpfile.$ext << EOF
           var gulp = require('gulp');
           var sonarqubeScanner = require('sonarqube-scanner');
           var sonarUrl = process.env.SONARQUBE_URL

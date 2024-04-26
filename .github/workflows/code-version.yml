@@ -76,6 +76,13 @@ jobs:
           echo "owner=$repo_owner" >> $GITHUB_OUTPUT
           echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
 
+      # Get Package Name from package.json
+      - name: Get package Name
+        id: package_name
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -oj -r '.name' package.json
+
       # Versioning SET
       - name: Version SET
         run: make version
@@ -84,10 +91,3 @@ jobs:
         id: semver
         run: |
           echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
-
-      # Get Package Name from package.json
-      - name: Get package Name
-        id: package_name
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq e -oj -r '.name' package.json

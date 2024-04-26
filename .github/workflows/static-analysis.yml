@@ -85,14 +85,20 @@ jobs:
         with:
           cmd: yq e -oy '.type' ./package.json
 
-      # Create generic gulp File for process
-      - name: Create gulpfile
+      # Extension for gulpfile
+      - name: Gulpfile Setting
+        id: gulpfile_settings
         run: |
           ext=js
           if [ "${{ steps.project_type.outputs.result }}" == "module" ]; then
             ext=cjs
           fi
-          cat > gulpfile.$ext << EOF
+          echo "extension=$ext" >> $GITHUB_OUTPUT
+
+      # Create generic gulp File for process
+      - name: Create gulpfile
+        run: |
+          cat > gulpfile.${{ steps.gulpfile_settings.outputs.extension }} << EOF
           var gulp = require('gulp');
           var sonarqubeScanner = require('sonarqube-scanner');
           var sonarUrl = process.env.SONARQUBE_URL
@@ -117,6 +123,5 @@ jobs:
           SONARQUBE_TOKEN: ${{ secrets.sonarqubeToken }}
         run: |
           npm install
-          npm install -D gulp
           npm install -D sonarqube-scanner
-          node ./node_modules/gulp/bin/gulp.js
+          npx sonarqube-scanner

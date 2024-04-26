@@ -95,33 +95,47 @@ jobs:
           fi
           echo "extension=$ext" >> $GITHUB_OUTPUT
 
-      # Create generic gulp File for process
-      - name: Create gulpfile
+#      # Create generic gulp File for process
+#      - name: Create gulpfile
+#        run: |
+#          cat > gulpfile.${{ steps.gulpfile_settings.outputs.extension }} << EOF
+#          var gulp = require('gulp');
+#          var sonarqubeScanner = require('sonarqube-scanner');
+#          var sonarUrl = process.env.SONARQUBE_URL
+#          var sonarToken = process.env.SONARQUBE_TOKEN
+#
+#          gulp.task('default', function(callback) {
+#            sonarqubeScanner({
+#              serverUrl : sonarUrl,
+#              login : sonarToken,
+#              token : sonarToken,
+#              options : {
+#                "sonar.projectKey": "${{ steps.project_name.outputs.result }}",
+#                "sonar.projectName": "${{ steps.project_description.outputs.result }}"
+#              }
+#            }, callback);
+#          });
+#          EOF
+      # Create sonar-project.properties
+      - name: Create Sonar Project Properties
         run: |
-          cat > gulpfile.${{ steps.gulpfile_settings.outputs.extension }} << EOF
-          var gulp = require('gulp');
-          var sonarqubeScanner = require('sonarqube-scanner');
-          var sonarUrl = process.env.SONARQUBE_URL
-          var sonarToken = process.env.SONARQUBE_TOKEN
-
-          gulp.task('default', function(callback) {
-            sonarqubeScanner({
-              serverUrl : sonarUrl,
-              login : sonarToken,
-              token : sonarToken,
-              options : {
-                "sonar.projectKey": "${{ steps.project_name.outputs.result }}",
-                "sonar.projectName": "${{ steps.project_description.outputs.result }}"
-              }
-            }, callback);
-          });
+          cat > sonar-project.properties << EOF
+          sonar.projectKey=${{ steps.project_name.outputs.result }}
+          sonar.projectName=${{ steps.project_description.outputs.result }}
+          sonar.sources=.
+          sonar.sourceEncoding=UTF-8
+          sonar.exclusions=node_modules/**,coverage/**,test/**,tests/**
+          sonar.tests=.
+          sonar.test.inclusions=**/*.test.js,**/*.spec.js
+          sonar.test.exclusions=node_modules/**,coverage/**,test/**,tests/**
           EOF
       # Test the code!
       - name: Static Test Code
         env:
-          SONARQUBE_URL: ${{ inputs.sonarqubeUrl }}
-          SONARQUBE_TOKEN: ${{ secrets.sonarqubeToken }}
+          SONAR_HOST_URL: ${{ inputs.sonarqubeUrl }}
+          SONAR_TOKEN: ${{ secrets.sonarqubeToken }}
         run: |
           npm install
           npm install -D sonarqube-scanner
           npx sonarqube-scanner
+

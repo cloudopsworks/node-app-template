@@ -55,13 +55,13 @@ jobs:
       - push_tag
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
+      - name: Check out code (Base)
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
           fetch-tags: true
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.base_ref }}
 
       - name: Delete local & remote Release
         if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/') && ( github.base_ref == 'master' || github.base_ref == 'main' || startsWith(github.base_ref,'support/') ) }}

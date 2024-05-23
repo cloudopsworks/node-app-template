@@ -72,7 +72,7 @@ jobs:
     if: ${{ needs.data.outputs.hasQualifier != 'true' }}
     with:
       package_name: ${{ needs.build.outputs.package_name }}
-      package_type: maven
+      package_type: npm
     secrets:
       token: ${{ secrets.BOT_TOKEN }}
 

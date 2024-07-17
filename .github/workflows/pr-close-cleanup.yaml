@@ -64,13 +64,13 @@ jobs:
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.build.node.version // "20"' ./cloudopsworks-ci.yaml
+          cmd: yq e '.build.node.version // "20"' ./.github/cloudopsworks-ci.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.build.node.dist // "adopt"' ./cloudopsworks-ci.yaml
+          cmd: yq e '.build.node.dist // "adopt"' ./.github/cloudopsworks-ci.yaml
       # Get pipeline conf
       - name: Get pipeline docker enable
         id: pipeline_docker

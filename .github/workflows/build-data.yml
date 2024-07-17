@@ -3,30 +3,38 @@
 #            On GitHub: https://github.com/cloudopsworks
 #            Distributed Under Apache v2.0 License
 #
-name: Code Version Extraction
+name: Code Build Workflow Template
 
 on:
   workflow_call:
     inputs:
-      deployment_name:
+      isRelease:
+        required: true
+        type: boolean
+      BOT_USER:
         required: true
         type: string
+      BOT_EMAIL:
+        required: true
+        type: string
+      TARGET_CLOUD:
+        required: true
+        type: string
+
     secrets:
-      token:
+      BOT_TOKEN:
         required: true
 
     outputs:
       semver:
         description: "Semver Output calculated on Build"
-        value: ${{ jobs.versioning.outputs.semver }}
+        value: ${{ jobs.build-data.outputs.semver }}
       package_name:
         description: "Package Name Output calculated on Build"
-        value: ${{ jobs.versioning.outputs.package_name }}
+        value: ${{ jobs.build-data.outputs.package_name }}
 
 jobs:
-  versioning:
-#    environment:
-#      name: ${{ inputs.deployment_name }}
+  build-data:
     outputs:
       semver: ${{ steps.semver.outputs.version }}
       package_name: ${{ steps.package_name.outputs.result }}
@@ -37,35 +45,34 @@ jobs:
         with:
           fetch-depth: 0
           #ref: ${{ inputs.ref }}
-          token: ${{ secrets.token }}
-      # Get pipeline conf node version
-      - name: Get pipeline node version
-        id: node_version
+          token: ${{ secrets.BOT_TOKEN }}
+      # Get pipeline conf java version
+      - name: Get pipeline Java version
+        id: java_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version // "20"' ./cloudopsworks-ci.yaml
-      # Get pipeline conf node dist
-      - name: Get pipeline node dist
-        id: node_dist
+          cmd: yq e '.build.java.version // "17"' ./.github/cloudopsworks-ci.yaml
+      # Get pipeline conf java dist
+      - name: Get pipeline Java dist
+        id: java_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.dist // "adopt"' ./cloudopsworks-ci.yaml
-      # Setup Node JS for builds with version provided
-      - name: Set Node Version
-        uses: actions/setup-node@v4
+          cmd: yq e '.build.java.dist // "adopt"' ./.github/cloudopsworks-ci.yaml
+      # Setup Java JDK for builds
+      - name: Set JDK
+        uses: actions/setup-java@v4
         with:
-          node-version: "${{ steps.node_version.outputs.result }}"
-          check-latest: true
-          token: ${{ secrets.token }}
+          java-version: "${{ steps.java_version.outputs.result }}"
+          distribution: "${{ steps.java_dist.outputs.result }}"
 
-      # Cache all NPM packages
-      - name: Cache NPM packages
+      # Cache all maven packages
+      - name: Cache Maven packages
         uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-maven-
 
       # Get the owner repo
       - name: Get owner
@@ -76,12 +83,12 @@ jobs:
           echo "owner=$repo_owner" >> $GITHUB_OUTPUT
           echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
 
-      # Get Package Name from package.json
-      - name: Get package Name
+      # Get the Package name from pom.xml
+      - name: Get Package name
         id: package_name
         uses: mikefarah/yq@master
         with:
-          cmd: yq e -oj -r '.name' package.json
+          cmd: yq e -oy '.project.groupId + "." + .project.artifactId' pom.xml
 
       # Versioning SET
       - name: Version SET

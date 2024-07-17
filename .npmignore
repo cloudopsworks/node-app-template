@@ -8,7 +8,7 @@ README.md
 jenkins*
 target/*
 charts/*
-cloudopsworks-ci*
+.github/cloudopsworks-ci.yaml
 skafold*
 gulpfile*
 # misc

@@ -38,7 +38,7 @@ jobs:
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version // "18"' ./cloudopsworks-ci.yaml
+          cmd: yq eval '.build.node.version // "20"' ./cloudopsworks-ci.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
@@ -47,14 +47,14 @@ jobs:
           cmd: yq eval '.build.node.dist // "adopt"' ./cloudopsworks-ci.yaml
       # Setup Node JS for builds with version provided
       - name: Set Node Version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "${{ steps.node_version.outputs.result }}"
           check-latest: true
           token: ${{ secrets.BOT_TOKEN }}
       # Cache all NPM packages
       - name: Cache NPM packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}

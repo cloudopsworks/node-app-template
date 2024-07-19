@@ -92,6 +92,7 @@ jobs:
         with:
           name: sbom
           path: bom.xml
+          retention-days: 1  
 
       # SBOM upload
       - name: SBOM Dtrack Upload

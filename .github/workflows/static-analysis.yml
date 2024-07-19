@@ -7,9 +7,9 @@ name: Static Analysis Process
 on:
   workflow_call:
     inputs:
-#      ref:
-#        required: true
-#        type: string
+      ref:
+        required: true
+        type: string
       semver:
         required: false
         type: string
@@ -32,7 +32,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.BOT_TOKEN }}
-          #ref: ${{ inputs.ref }}
+          ref: ${{ inputs.ref }}
       # Get pipeline conf node version
       - name: Get pipeline node version
         id: node_version
@@ -60,9 +60,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      # Run versioning to tag the source
-      - name: Run Versioning setup
-        run: make version
 
       # Get project name with yq in the process strip starting @ if exists and change any / to _
       - name: Get project name
@@ -85,50 +82,10 @@ jobs:
         with:
           cmd: yq e -oy '.type' ./package.json
 
-      # Extension for gulpfile
-      - name: Gulpfile Setting
-        id: gulpfile_settings
-        run: |
-          ext=js
-          if [ "${{ steps.project_type.outputs.result }}" == "module" ]; then
-            ext=cjs
-          fi
-          echo "extension=$ext" >> $GITHUB_OUTPUT
+      # Run versioning to tag the source
+      - name: Run Versioning setup
+        run: make version
 
-#      # Create generic gulp File for process
-#      - name: Create gulpfile
-#        run: |
-#          cat > gulpfile.${{ steps.gulpfile_settings.outputs.extension }} << EOF
-#          var gulp = require('gulp');
-#          var sonarqubeScanner = require('sonarqube-scanner');
-#          var sonarUrl = process.env.SONARQUBE_URL
-#          var sonarToken = process.env.SONARQUBE_TOKEN
-#
-#          gulp.task('default', function(callback) {
-#            sonarqubeScanner({
-#              serverUrl : sonarUrl,
-#              login : sonarToken,
-#              token : sonarToken,
-#              options : {
-#                "sonar.projectKey": "${{ steps.project_name.outputs.result }}",
-#                "sonar.projectName": "${{ steps.project_description.outputs.result }}"
-#              }
-#            }, callback);
-#          });
-#          EOF
-      # Create sonar-project.properties
-      - name: Create Sonar Project Properties
-        run: |
-          cat > sonar-project.properties << EOF
-          sonar.projectKey=${{ steps.project_name.outputs.result }}
-          sonar.projectName=${{ steps.project_description.outputs.result }}
-          sonar.sources=.
-          sonar.sourceEncoding=UTF-8
-          sonar.exclusions=node_modules/**,coverage/**,test/**,tests/**
-          sonar.tests=.
-          sonar.test.inclusions=**/*.test.js,**/*.spec.js
-          sonar.test.exclusions=node_modules/**,coverage/**,test/**,tests/**
-          EOF
       # Test the code!
       - name: Static Test Code
         env:
@@ -136,6 +93,23 @@ jobs:
           SONAR_TOKEN: ${{ secrets.sonarqubeToken }}
         run: |
           npm install
-          npm install -D sonarqube-scanner
-          npx sonarqube-scanner
+          npm test
 
+      - name: Sonar Scan
+        uses: sonarsource/sonarqube-scan-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.sonarqubeToken }}
+          SONAR_HOST_URL: ${{ inputs.sonarqubeUrl }}
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=${{ steps.project_name.outputs.result }}
+            -Dsonar.projectVersion=${{ inputs.semver }}
+            -Dsonar.sources=.
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.language=javascript
+            -Dsonar.exclusions=node_modules/**,coverage/**,test/**,tests/**
+            -Dsonar.tests=.
+            -Dsonar.test.inclusions=**/*.test.js,**/*.spec.js
+            -Dsonar.test.exclusions=node_modules/**,coverage/**,test/**,tests/**
+#            -Dsonar.branch.name=${{ github.ref }}

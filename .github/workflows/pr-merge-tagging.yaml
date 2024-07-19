@@ -41,7 +41,7 @@ jobs:
 
   push_tag:
     if: ${{ github.event.pull_request.merged == true && ( github.base_ref == 'master' || github.base_ref == 'main' || startsWith(github.base_ref,'support/') ) }}
-    uses: cloudopsworks/base-app-template/.github/workflows/gitflow-push-tag.yml@v2
+    uses: cloudopsworks/base-app-template/.github/workflows/gitflow-push-tag.yml@v3
     secrets:
       token: ${{ secrets.BOT_TOKEN }}
     with:
@@ -61,7 +61,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
           fetch-tags: true
-          ref: ${{ github.base_ref }}
+          ref: ${{ github.head_ref }}
 
       - name: Delete local & remote Release
         if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'release/') && ( github.base_ref == 'master' || github.base_ref == 'main' || startsWith(github.base_ref,'support/') ) }}

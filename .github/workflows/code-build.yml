@@ -253,9 +253,10 @@ jobs:
         id: node_build_required_files
         uses: mikefarah/yq@master
         with:
-          cmd: yq e -I=0 '.node_build_required_files[]' ./.github/vars/inputs-global.yaml
+          cmd: yq e -I=0 '.node_build_required_files[]' ./.github/vars/inputs-global.yaml | tr '\n' ' '
 
       - name: Copy Required build files
+        if: ${{ steps.node_build_required_files.outputs.result != '' }}
         run: |
           for file in ${{ steps.node_build_required_files.outputs.result }}; do
             cp -v .github/values/${{ inputs.environment }}/${{ inputs.targetName != '' && inputs.targetName || steps.getowner.outputs.repo_name }}/$file ${{ github.workspace }}/

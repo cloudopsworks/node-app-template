@@ -250,17 +250,10 @@ jobs:
 
       # get from global inputs extra required files from : node_build_required_files
       - name: Get Required build files
-        id: node_build_required_files
+        id: node_extra_env
         uses: mikefarah/yq@master
         with:
-          cmd: yq e -I=0 '.node_build_required_files[]' ./.github/vars/inputs-global.yaml | tr '\n' ' '
-
-      - name: Copy Required build files
-        if: ${{ steps.node_build_required_files.outputs.result != '' }}
-        run: |
-          for file in ${{ steps.node_build_required_files.outputs.result }}; do
-            cp -v .github/values/${{ inputs.environment }}/${{ inputs.targetName != '' && inputs.targetName || steps.getowner.outputs.repo_name }}/$file ${{ github.workspace }}/
-          done
+          cmd: yq e -I=0 '.node_extra_env // ""' ./.github/vars/inputs-global.yaml
 
       # Get from global inputs if there is custom node install command
       - name: Get Custom Install Command
@@ -278,13 +271,18 @@ jobs:
 
       # Build the code!
       - name: Install Dependencies
-        run: ${{ steps.install_command.outputs.result }}
+        run: |
+          ${{ steps.node_extra_env.outputs.result }}
+          ${{ steps.install_command.outputs.result }}
       # Build the code! build target MUST be defined in package.json
       - name: Run NPM Build
-        run: ${{ steps.build_command.outputs.result }}
+        run: |
+          ${{ steps.node_extra_env.outputs.result }}
+          ${{ steps.build_command.outputs.result }}
       # Test the code
       - name: Test Code
-        run: CI=true DISPLAY=:99 npm test
+        run: |
+          CI=true DISPLAY=:99 npm test
 
       # Deploy Code to Registry
       - name: Deploy Code to Registy

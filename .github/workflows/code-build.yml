@@ -248,8 +248,15 @@ jobs:
         with:
           cmd: yq e -oj -i '.repository.type="git"|.repository.url="${{ github.repositoryUrl }}"' package.json
 
-      # get from global inputs extra required files from : node_build_required_files
-      - name: Get Required build files
+      # get from global inputs extra env vars from specific build environment: node_extra_env entry
+      - name: Get Optional Env Vars
+        id: node_extra_env_env
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.node_extra_env // ""' ./.github/vars/inputs-${{ inputs.environment }}.yaml
+
+      # get from global inputs extra env vars from : node_extra_env entry
+      - name: Get Optional Env Vars Environment
         id: node_extra_env
         uses: mikefarah/yq@master
         with:
@@ -272,12 +279,12 @@ jobs:
       # Build the code!
       - name: Install Dependencies
         run: |
-          ${{ steps.node_extra_env.outputs.result }}
+          ${{ steps.node_extra_env.outputs.result != '' && steps.node_extra_env.outputs.result || steps.node_extra_env_env.outputs.result  }}
           ${{ steps.install_command.outputs.result }}
       # Build the code! build target MUST be defined in package.json
       - name: Run NPM Build
         run: |
-          ${{ steps.node_extra_env.outputs.result }}
+          ${{ steps.node_extra_env.outputs.result != '' && steps.node_extra_env.outputs.result || steps.node_extra_env_env.outputs.result  }}
           ${{ steps.build_command.outputs.result }}
       # Test the code
       - name: Test Code

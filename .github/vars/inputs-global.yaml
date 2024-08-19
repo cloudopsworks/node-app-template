@@ -3,7 +3,7 @@ environment_name: "ENV_NAME|APP_NAME"
 namespace: "GITHUB TEAM OWNER|Beanstalk|Automation|Lambda"
 repository_owner: "REPO_OWNER"
 #api_files_dir: "relative-path-to-apidefs"
-# Required ENV variables
+# Optional Additional ENV variables
 #node_extra_env: |
 #  ENV_VAR1=value1
 #  ENV_VAR2=value2

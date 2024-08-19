@@ -108,7 +108,7 @@ jobs:
             -Dsonar.sources=.
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.language=javascript
-            -Dsonar.exclusions=node_modules/**,coverage/**,test/**,tests/**
+            -Dsonar.exclusions=node_modules/**,coverage/**,test/**,tests/**,charts/**,tronador/**,dist/**,build/**
             -Dsonar.tests=.
             -Dsonar.test.inclusions=**/*.test.js,**/*.spec.js
             -Dsonar.test.exclusions=node_modules/**,coverage/**,test/**,tests/**

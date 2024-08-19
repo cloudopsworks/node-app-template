@@ -11,6 +11,13 @@ on:
       buildEnvironment:
         required: true
         type: string
+      environment:
+        required: true
+        type: string
+      targetName:
+        required: false
+        type: string
+        default: ''
       isRelease:
         required: true
         type: boolean
@@ -241,9 +248,25 @@ jobs:
         with:
           cmd: yq e -oj -i '.repository.type="git"|.repository.url="${{ github.repositoryUrl }}"' package.json
 
+      # get from global inputs extra required files from : node_build_required_files
+      - name: Get Required build files
+        id: node_build_required_files
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.node_build_required_files[]' ./.github/vars/inputs-global.yaml
+
+      - name: Copy Required build files
+        run: |
+          for file in ${{ steps.node_build_required_files.outputs.result }}; do
+            cp -v .github/values/${{ inputs.environment }}/${{ inputs.targetName != '' && inputs.targetName || steps.getowner.outputs.repo_name }}/$file ${{ github.workspace }}/
+          done
+
       # Build the code!
-      - name: Build Code
-        run: npm ci
+      - name: Install Dependencies
+        run: npm install --omit=dev
+      # Build the code! build target MUST be defined in package.json
+      - name: Run NPM Build
+        run: npm run build
       # Test the code
       - name: Test Code
         run: CI=true DISPLAY=:99 npm test

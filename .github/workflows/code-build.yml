@@ -262,12 +262,26 @@ jobs:
             cp -v .github/values/${{ inputs.environment }}/${{ inputs.targetName != '' && inputs.targetName || steps.getowner.outputs.repo_name }}/$file ${{ github.workspace }}/
           done
 
+      # Get from global inputs if there is custom node install command
+      - name: Get Custom Install Command
+        id: install_command
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.custom_install_command|"npm install --omit=dev"' ./.github/vars/inputs-global.yaml
+
+      # Get from global inputs if there is custom node build command
+      - name: Get Custom Install Command
+        id: build_command
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.custom_build_command|"npm run build"' ./.github/vars/inputs-global.yaml
+
       # Build the code!
       - name: Install Dependencies
-        run: npm install --omit=dev
+        run: ${{ step.install_command.outputs.result }}
       # Build the code! build target MUST be defined in package.json
       - name: Run NPM Build
-        run: npm run build
+        run: ${{ step.build_command.outputs.result }}
       # Test the code
       - name: Test Code
         run: CI=true DISPLAY=:99 npm test

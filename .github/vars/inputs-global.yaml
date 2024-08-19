@@ -6,3 +6,5 @@ repository_owner: "REPO_OWNER"
 #node_build_required_files: # Required files for node build, relative to environment values ROOT
 #  - config1.json
 #  - config2.json
+#custom_install_command: npm install
+#custom_build_command: npm run build

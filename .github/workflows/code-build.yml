@@ -11,6 +11,13 @@ on:
       buildEnvironment:
         required: true
         type: string
+      environment:
+        required: true
+        type: string
+      targetName:
+        required: false
+        type: string
+        default: ''
       isRelease:
         required: true
         type: boolean
@@ -241,12 +248,48 @@ jobs:
         with:
           cmd: yq e -oj -i '.repository.type="git"|.repository.url="${{ github.repositoryUrl }}"' package.json
 
+      # get from global inputs extra env vars from specific build environment: node_extra_env entry
+      - name: Get Optional Env Vars - ${{ inputs.environment }}
+        id: node_extra_env_env
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.node_extra_env // ""' ./.github/vars/inputs-${{ inputs.environment }}.yaml | tr '\n' ' ' | sed 's/.$//'
+
+      # get from global inputs extra env vars from : node_extra_env entry
+      - name: Get Optional Env Vars
+        id: node_extra_env
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.node_extra_env // ""' ./.github/vars/inputs-global.yaml | tr '\n' ' ' | sed 's/.$//'
+
+      # Get from global inputs if there is custom node install command
+      - name: Get Custom Install Command
+        id: install_command
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.custom_install_command // "npm install --omit=dev"' ./.github/vars/inputs-global.yaml
+
+      # Get from global inputs if there is custom node build command
+      - name: Get Custom Install Command
+        id: build_command
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.custom_build_command // "npm run build"' ./.github/vars/inputs-global.yaml
+
       # Build the code!
-      - name: Build Code
-        run: npm ci
+      - name: Install Dependencies
+        run: |
+          ${{ steps.node_extra_env.outputs.result != '' && steps.node_extra_env.outputs.result || steps.node_extra_env_env.outputs.result }} ${{ steps.install_command.outputs.result }}
+
+      # Build the code! build target MUST be defined in package.json
+      - name: Run NPM Build
+        run: |
+          ${{ steps.node_extra_env.outputs.result != '' && steps.node_extra_env.outputs.result || steps.node_extra_env_env.outputs.result }} ${{ steps.build_command.outputs.result }}
+
       # Test the code
       - name: Test Code
-        run: CI=true DISPLAY=:99 npm test
+        run: |
+          CI=true DISPLAY=:99 npm test
 
       # Deploy Code to Registry
       - name: Deploy Code to Registy

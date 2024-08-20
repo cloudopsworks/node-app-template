@@ -1,3 +1,4 @@
+environment: "dev|uat|prod|demo"
 # This file contains the environment variables for the Kubernetes deployment
 runner_set: "RUNNER-ENV"
 container_registry: REGISTRY

@@ -1,7 +1,7 @@
 organization_name: "ORG_NAME"
-environment_name: "ENV_NAME|APP_NAME"
-namespace: "GITHUB TEAM OWNER|Beanstalk|Automation|Lambda"
-repository_owner: "REPO_OWNER"
+organization_unit: "ORG_UNIT"
+environment_name: "ENV_NAME"
+repository_owner: "REPO_OWNER" # Required
 #api_files_dir: "relative-path-to-apidefs"
 # Optional Additional ENV variables
 #node_extra_env: |

@@ -149,8 +149,9 @@ jobs:
       - data
       - build-data
     if: needs.data.outputs.cloud == 'AZURE' && needs.build-data.outputs.has_preview
-    uses: ${{ github.repository_owner }}/base-app-template/.github/workflows/cleanup-preview-azure.yml@v3
+    uses: ${{ github.repository_owner }}/base-app-template/.github/workflows/preview-azure.yml@v3
     with:
+      destroy: true
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}
       ref: ${{ github.head_ref }}
       pr_name: pr${{ github.event.pull_request.number }}
@@ -173,8 +174,9 @@ jobs:
       - data
       - build-data
     if: needs.data.outputs.cloud == 'AWS' && needs.build-data.outputs.has_preview
-    uses: ${{ github.repository_owner }}/base-app-template/.github/workflows/cleanup-preview-aws.yml@v3
+    uses: ${{ github.repository_owner }}/base-app-template/.github/workflows/preview-aws.yml@v3
     with:
+      destroy: true
       semver: 0.1.0-SNAPSHOT-PR${{ github.event.pull_request.number }}-${{ github.run_number }}
       ref: ${{ github.head_ref }}
       pr_name: pr${{ github.event.pull_request.number }}

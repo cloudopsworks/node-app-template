@@ -193,6 +193,13 @@ jobs:
         with:
           cmd: yq e '.pipeline[]' ./.github/cloudopsworks-ci.yaml | grep zip | wc -l | tr -d " "
 
+      # Get pipeline conf (build)
+      - name: Get pipeline node_build packaging
+        id: pipeline_node_build
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.pipeline[]' ./.github/cloudopsworks-ci.yaml | grep node_build | wc -l | tr -d " "
+
       # Get pipeline conf
       - name: Get pipeline zip packaging globs
         id: zip_globs
@@ -275,6 +282,13 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: yq e -I=0 '.custom_build_command // "npm run build"' ./.github/vars/inputs-global.yaml
+
+      # get from global inputs the path where to find the node build result
+      - name: Get Optional Env Vars - ${{ inputs.environment }}
+        id: node_build_dir
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.node_build_dir // "./build"' ./.github/vars/inputs-global.yaml
 
       # Build the code!
       - name: Install Dependencies
@@ -425,3 +439,13 @@ jobs:
           path: |
             target/${{ steps.getowner.outputs.repo_name }}*.zip
           retention-days: 1
+
+      # Perform the node_build packaging right from the build directory
+      - name: Upload Build result
+        uses: actions/upload-artifact@v4
+        if: steps.pipeline_node_build.outputs.result == 1
+        with:
+          name: node_build_artifact
+          path: ${{ steps.node_build_dir.outputs.result }}
+          retention-days: 1
+          compression-level: '1' #fast

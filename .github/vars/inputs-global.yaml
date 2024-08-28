@@ -9,3 +9,4 @@ repository_owner: "REPO_OWNER" # Required
 #  ENV_VAR2=value2
 #custom_install_command: npm install
 #custom_build_command: npm run build
+#node_build_dir: ./build

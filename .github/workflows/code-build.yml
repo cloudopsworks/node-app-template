@@ -284,7 +284,7 @@ jobs:
           cmd: yq e -I=0 '.custom_build_command // "npm run build"' ./.github/vars/inputs-global.yaml
 
       # get from global inputs the path where to find the node build result
-      - name: Get Optional Env Vars - ${{ inputs.environment }}
+      - name: Get Node Build Dir
         id: node_build_dir
         uses: mikefarah/yq@master
         with:

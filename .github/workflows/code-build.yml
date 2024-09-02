@@ -293,7 +293,7 @@ jobs:
       # Build the code!
       - name: Install Dependencies
         run: |
-          ${{ steps.node_extra_env.outputs.result != '' && steps.node_extra_env.outputs.result || steps.node_extra_env_env.outputs.result }} ${{ steps.install_command.outputs.result }}
+          ${{ steps.node_extra_env_env.outputs.result != '' && steps.node_extra_env_env.outputs.result || steps.node_extra_env.outputs.result }} ${{ steps.install_command.outputs.result }}
 
       # Build the code! build target MUST be defined in package.json
       - name: Run NPM Build

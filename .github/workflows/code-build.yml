@@ -281,7 +281,7 @@ jobs:
         id: build_command
         uses: mikefarah/yq@master
         with:
-          cmd: yq e -I=0 '.custom_build_command // "npm run build"' ./.github/vars/inputs-global.yaml
+          cmd: yq e -I=0 '.custom_build_command // "npm run build --if-present"' ./.github/vars/inputs-global.yaml
 
       # get from global inputs the path where to find the node build result
       - name: Get Node Build Dir
@@ -303,7 +303,7 @@ jobs:
       # Test the code
       - name: Test Code
         run: |
-          CI=true DISPLAY=:99 npm test
+          CI=true DISPLAY=:99 npm test --if-present
 
       # Deploy Code to Registry
       - name: Deploy Code to Registy

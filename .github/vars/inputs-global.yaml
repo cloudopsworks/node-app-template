@@ -13,6 +13,10 @@ frontend: true | false # Set frontend=true to deploy only /build directory into 
 #  # COPY . .
 #  # EXPOSE 8080
 #  # CMD ["node", "server.js"]
+#docker_args: |
+#  ARG1=value1
+#  ARG2=value2
+#  ARG3=value3
 #api_files_dir: "relative-path-to-apidefs"
 # Optional Additional ENV variables
 #node_extra_env: |

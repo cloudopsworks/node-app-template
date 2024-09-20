@@ -101,6 +101,7 @@ jobs:
       node_extra_env_env: ${{ steps.node_extra_env_env.outputs.result }}
       node_extra_env: ${{ steps.node_extra_env.outputs.result }}
       docker_inline: ${{ steps.docker_inline.outputs.result }}
+      docker_args: ${{ steps.docker_args_env.outputs.result == '' && steps.docker_args_global.outputs.result || steps.docker_args_env.outputs.result }}
       install_command: ${{ steps.install_command.outputs.result }}
       build_command: ${{ steps.build_command.outputs.result }}
       front_end: ${{ steps.front_end.outputs.result == 'true' }}
@@ -261,6 +262,20 @@ jobs:
         with:
           cmd: yq e -I=0 '.docker_inline // ""' ./.github/vars/inputs-global.yaml
 
+      # get from global inputs docker arguments, also as text
+      - name: Get Docker Arguments
+        id: docker_args_global
+        uses: mikefarah/yq@master
+        with:
+        cmd: yq e -I=0 '.docker_args // ""' ./.github/vars/inputs-global.yaml
+
+      # get from environmental inputs the docker arguments will override the one set on docker_args,also as text
+      - name: Get Docker Arguments for ${{ inputs.environment }}
+        id: docker_args_env
+        uses: mikefarah/yq@master
+        with:
+        cmd: yq e -I=0 '.docker_args // ""' ./.github/vars/inputs-${{ inputs.environment }}.yaml
+
       # Get the owner repo
       - name: Get owner
         id: getowner
@@ -394,6 +409,7 @@ jobs:
       repository_name: ${{ needs.pipeline-config.outputs.repository_name }}
       repository_owner: ${{ github.repository_owner }}
       docker_inline: ${{ needs.pipeline-config.outputs.docker_inline }}
+      docker_args: ${{ needs.pipeline-config.outputs.docker_args }}
       front_end: ${{ needs.pipeline-config.outputs.front_end }}
       node_version: ${{ needs.pipeline-config.outputs.node_version }}
     secrets:

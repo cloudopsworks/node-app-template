@@ -46,24 +46,25 @@ jobs:
           fetch-depth: 0
           #ref: ${{ inputs.ref }}
           token: ${{ secrets.BOT_TOKEN }}
-      # Get pipeline conf java version
-      - name: Get pipeline Java version
-        id: java_version
+      # Get pipeline conf node version
+      - name: Get pipeline node version
+        id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.build.java.version // "17"' ./.github/cloudopsworks-ci.yaml
-      # Get pipeline conf java dist
-      - name: Get pipeline Java dist
-        id: java_dist
+          cmd: yq eval '.build.node.version // "20"' ./.github/cloudopsworks-ci.yaml
+      # Get pipeline conf node dist
+      - name: Get pipeline node dist
+        id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.build.java.dist // "adopt"' ./.github/cloudopsworks-ci.yaml
-      # Setup Java JDK for builds
-      - name: Set JDK
-        uses: actions/setup-java@v4
+          cmd: yq eval '.build.node.dist // "adopt"' ./.github/cloudopsworks-ci.yaml
+      # Setup Node JS for builds with version provided
+      - name: Set Node Version
+        uses: actions/setup-node@v4
         with:
-          java-version: "${{ steps.java_version.outputs.result }}"
-          distribution: "${{ steps.java_dist.outputs.result }}"
+          node-version: "${{ steps.node_version.outputs.result }}"
+          check-latest: true
+          token: ${{ secrets.BOT_TOKEN }}
 
       # Cache all maven packages
       - name: Cache Maven packages
@@ -83,12 +84,12 @@ jobs:
           echo "owner=$repo_owner" >> $GITHUB_OUTPUT
           echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
 
-      # Get the Package name from pom.xml
-      - name: Get Package name
+      # Get Package Name from package.json
+      - name: Get package Name
         id: package_name
         uses: mikefarah/yq@master
         with:
-          cmd: yq e -oy '.project.groupId + "." + .project.artifactId' pom.xml
+          cmd: yq e -oj -r '.name' package.json
 
       # Versioning SET
       - name: Version SET

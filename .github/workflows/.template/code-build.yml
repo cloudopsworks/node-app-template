@@ -395,6 +395,7 @@ jobs:
       repository_owner: ${{ github.repository_owner }}
       docker_inline: ${{ needs.pipeline-config.outputs.docker_inline }}
       front_end: ${{ needs.pipeline-config.outputs.front_end }}
+      node_version: ${{ needs.pipeline-config.outputs.node_version }}
     secrets:
       token: ${{ secrets.BOT_TOKEN }}
       inherit: true

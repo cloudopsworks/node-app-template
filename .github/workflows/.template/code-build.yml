@@ -403,7 +403,6 @@ jobs:
     needs:
       - pipeline-config
       - build
-    runs-on: ubuntu-latest
     if: needs.pipeline-config.outputs.pipeline_docker && needs.pipeline-config.outputs.front_end
     uses: cloudopsworks/base-app-template/.github/workflows/docker-build-node.yml@v4
     with:

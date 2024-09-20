@@ -106,6 +106,7 @@ jobs:
       build_command: ${{ steps.build_command.outputs.result }}
       front_end: ${{ steps.front_end.outputs.result == 'true' }}
       repository_name: ${{ needs.pipeline-config.outputs.repository_name }}
+      custom_run_command: ${{ steps.custom_run_command.outputs.result }}
     runs-on: ubuntu-latest
     steps:
       # Proceed with checkout of source with all the references (depth=0)
@@ -276,6 +277,13 @@ jobs:
         with:
         cmd: yq e -I=0 '.docker_args // ""' ./.github/vars/inputs-${{ inputs.environment }}.yaml
 
+      # get custom_run_command from global inputs
+      - name: Get Custom Run Command
+        id: custom_run_command
+        uses: mikefarah/yq@master
+        with:
+        cmd: yq e -I=0 '.custom_run_command // ""' ./.github/vars/inputs-global.yaml
+
       # Get the owner repo
       - name: Get owner
         id: getowner
@@ -412,6 +420,7 @@ jobs:
       docker_args: ${{ needs.pipeline-config.outputs.docker_args }}
       front_end: ${{ needs.pipeline-config.outputs.front_end }}
       node_version: ${{ needs.pipeline-config.outputs.node_version }}
+      custom_run_command: ${{ needs.pipeline-config.outputs.custom_run_command }}
     secrets:
       token: ${{ secrets.BOT_TOKEN }}
       inherit: true

@@ -17,6 +17,7 @@ frontend: true | false # Set frontend=true to deploy only /build directory into 
 #  ARG1=value1
 #  ARG2=value2
 #  ARG3=value3
+#custom_run_command: node run start
 #api_files_dir: "relative-path-to-apidefs"
 # Optional Additional ENV variables
 #node_extra_env: |

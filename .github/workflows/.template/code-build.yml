@@ -232,16 +232,6 @@ jobs:
         run: |
           echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
 
-      # Proceed with helm chart versioning bump
-      - name: Helm Chart Versioning
-        if: steps.pipeline_helm.outputs.result == 1
-        env:
-          HELM_REGISTRY_ADDRESS: ${{ inputs.HELM_REGISTRY_ADDRESS }}
-          DOCKER_REGISTRY_ADDRESS: ${{ inputs.DOCKER_REGISTRY_ADDRESS }}
-          REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
-          REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
-        run: make helm/version
-
       # Get Package Name from package.json
       - name: Get package Name
         id: package_name
@@ -375,49 +365,7 @@ jobs:
           context: .
           tags: |
             ${{ inputs.DOCKER_REGISTRY_ADDRESS }}/${{ steps.getowner.outputs.owner }}/${{ steps.getowner.outputs.repo_name }}:${{ steps.semver.outputs.version }}
-      #
-      # Helm Build and deploy to ACR registry
-      #
-      - name: Helm Build Release Azure ACR
-        if: steps.pipeline_helm.outputs.result == 1 && env.TARGET_CLOUD == 'AZURE'
-        env:
-          HELM_REGISTRY_ADDRESS: ${{ inputs.HELM_REGISTRY_ADDRESS }}
-          DOCKER_REGISTRY_ADDRESS: ${{ inputs.DOCKER_REGISTRY_ADDRESS }}
-          HELM_EXPERIMENTAL_OCI: "1"
-          REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
-          REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
-          TARGET_CLOUD: ${{ inputs.TARGET_CLOUD }}
-          HELM_CREDS_USER: ${{ secrets.AZURE_SERVICE_ID }}
-          HELM_CREDS_PASSWORD: ${{ secrets.AZURE_SERVICE_SECRET }}
-        run: make helm/release
 
-      #
-      # Helm Build and deploy to ECR registry
-      #
-      - name: AWS ECR login
-        id: ecr_login
-        if: steps.pipeline_helm.outputs.result == 1 && inputs.TARGET_CLOUD == 'AWS'
-        env:
-          TARGET_CLOUD: ${{ inputs.TARGET_CLOUD }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ inputs.AWS_REGION }}
-        run: |
-          pass=`aws ecr get-login-password --region $AWS_REGION`
-          echo "auth=$pass" >> $GITHUB_OUTPUT
-
-      - name: Helm Build Release AWS ECR
-        if: steps.pipeline_helm.outputs.result == 1 && inputs.TARGET_CLOUD == 'AWS'
-        env:
-          HELM_REGISTRY_ADDRESS: ${{ inputs.HELM_REGISTRY_ADDRESS }}
-          DOCKER_REGISTRY_ADDRESS: ${{ inputs.DOCKER_REGISTRY_ADDRESS }}
-          HELM_EXPERIMENTAL_OCI: "1"
-          REPOSITORY_OWNER: ${{ steps.getowner.outputs.owner }}
-          REPOSITORY_NAME: ${{ steps.getowner.outputs.repo_name }}
-          TARGET_CLOUD: ${{ inputs.TARGET_CLOUD }}
-          HELM_CREDS_USER: AWS
-          HELM_CREDS_PASSWORD: ${{ steps.ecr_login.outputs.auth }}
-        run: make helm/release
       #
       # Perform ZIP packaging of target files & globbed files
       #

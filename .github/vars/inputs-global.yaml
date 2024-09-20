@@ -3,6 +3,16 @@ organization_unit: "ORG_UNIT"
 environment_name: "ENV_NAME"
 repository_owner: "REPO_OWNER" # Required
 frontend: true | false # Set frontend=true to deploy only /build directory into ngnix enabled Dockerfile
+#docker_inline: |
+#  # Dockerfile content here
+#  # Example:
+#  # FROM node:14
+#  # WORKDIR /app
+#  # COPY package*.json ./
+#  # RUN npm install
+#  # COPY . .
+#  # EXPOSE 8080
+#  # CMD ["node", "server.js"]
 #api_files_dir: "relative-path-to-apidefs"
 # Optional Additional ENV variables
 #node_extra_env: |

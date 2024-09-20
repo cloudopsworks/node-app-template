@@ -1,5 +1,5 @@
 ##
-# (c) 2022 - Cloud Ops Works LLC - https://cloudops.works/
+# (c) 2024 - Cloud Ops Works LLC - https://cloudops.works/
 #            On GitHub: https://github.com/cloudopsworks
 #            Distributed Under Apache v2.0 License
 #
@@ -59,31 +59,31 @@ on:
     outputs:
       has_preview:
         description: "Has Preview output"
-        value: ${{ jobs.build.outputs.has_preview }}
+        value: ${{ jobs.pipeline-config.outputs.has_preview }}
       pipeline_helm:
         description: "Pipeline with Helm Enabled"
-        value: ${{ jobs.build.outputs.pipeline_helm }}
+        value: ${{ jobs.pipeline-config.outputs.pipeline_helm }}
       pipeline_docker:
         description: "Pipeline with Docker Enabled"
-        value: ${{ jobs.build.outputs.pipeline_docker }}
+        value: ${{ jobs.pipeline-config.outputs.pipeline_docker }}
       pipeline_sonarqube:
         description: "Pipeline with Sonarqube Analysis Enabled"
-        value: ${{ jobs.build.outputs.pipeline_sonarqube }}
+        value: ${{ jobs.pipeline-config.outputs.pipeline_sonarqube }}
       pipeline_dtrack:
         description: "Pipeline with DependencyTrack Analysis Enabled"
-        value: ${{ jobs.build.outputs.pipeline_dtrack }}
+        value: ${{ jobs.pipeline-config.outputs.pipeline_dtrack }}
       pipeline_dtrack_project_type:
         description: "Pipeline classification for DependencyTrack Analysis, blank when dtrack is disabled"
-        value: ${{ jobs.build.outputs.pipeline_dtrack_project_type }}
+        value: ${{ jobs.pipeline-config.outputs.pipeline_dtrack_project_type }}
       semver:
         description: "Semver Output calculated on Build"
         value: ${{ jobs.build.outputs.semver }}
       package_name:
         description: "Package Name Output calculated on Build"
-        value: ${{ jobs.build.outputs.package_name }}
+        value: ${{ jobs.pipeline-config.outputs.package_name }}
 
 jobs:
-  build:
+  pipeline-config:
     outputs:
       has_preview: ${{ steps.has_preview.outputs.result == 1 }}
       pipeline_helm: ${{ steps.pipeline_helm.outputs.result == 1 }}
@@ -91,11 +91,23 @@ jobs:
       pipeline_sonarqube: ${{ steps.disable_sonarqube.outputs.result == 0 }}
       pipeline_dtrack: ${{ steps.disable_dtrack.outputs.result == 0 }}
       pipeline_dtrack_project_type: ${{ steps.dtrack_project_type.outputs.type }}
-      semver: ${{ steps.semver.outputs.version }}
       package_name: ${{ steps.package_name.outputs.result }}
+      exclude_globs: ${{ steps.exclude_globs.outputs.result }}
+      zip_globs: ${{ steps.zip_globs.outputs.result }}
+      pipeline_node_build: ${{ steps.pipeline_node_build.outputs.result }}
+      node_version: ${{ steps.node_version.outputs.result }}
+      node_dist: ${{ steps.node_dist.outputs.result }}
+      node_build_dir: ${{ steps.node_build_dir.outputs.result }}
+      node_extra_env_env: ${{ steps.node_extra_env_env.outputs.result }}
+      node_extra_env: ${{ steps.node_extra_env.outputs.result }}
+      docker_inline: ${{ steps.docker_inline.outputs.result }}
+      install_command: ${{ steps.install_command.outputs.result }}
+      build_command: ${{ steps.build_command.outputs.result }}
+      front_end: ${{ steps.front_end.outputs.result == 'true' }}
+      repository_name: ${{ needs.pipeline-config.outputs.repository_name }}
     runs-on: ubuntu-latest
     steps:
-      # Proceed with checkout of source with all the references (depth=0)  
+      # Proceed with checkout of source with all the references (depth=0)
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -113,27 +125,6 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: yq eval '.build.node.dist // "adopt"' ./.github/cloudopsworks-ci.yaml
-      # Setup Node JS for builds with version provided
-      - name: Set Node Version
-        uses: actions/setup-node@v4
-        with:
-          node-version: "${{ steps.node_version.outputs.result }}"
-          check-latest: true
-          token: ${{ secrets.BOT_TOKEN }}
-      # Helm Chart build & deploy Support
-      - uses: azure/setup-helm@v4
-        with:
-          version: 'latest'
-          token: ${{ secrets.BOT_TOKEN }}
-      # Cache all NPM packages
-      - name: Cache NPM packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       # Get pipeline conf
       - name: Get pipeline docker enable
         id: pipeline_docker
@@ -214,36 +205,12 @@ jobs:
         with:
           cmd: yq e '.excludeGlobs[]' ./.github/cloudopsworks-ci.yaml
 
-      # Get the owner repo
-      - name: Get owner
-        id: getowner
-        run: |
-          repo_owner=`echo "$GITHUB_REPOSITORY" | cut -f 1 -d "/"`
-          repo_name=`echo "$GITHUB_REPOSITORY" | cut -f 2 -d "/"`
-          echo "owner=$repo_owner" >> $GITHUB_OUTPUT
-          echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
-
-      # Versioning SET
-      - name: Version SET
-        run: make version
-
-      - name: Version Capture
-        id: semver
-        run: |
-          echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
-
       # Get Package Name from package.json
       - name: Get package Name
         id: package_name
         uses: mikefarah/yq@master
         with:
           cmd: yq e -oj -r '.name' package.json
-
-      # Edit package.json in order to include repository for automatic linking
-      - name: Package.JSON - REPO auto link
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq e -oj -i '.repository.type="git"|.repository.url="${{ github.repositoryUrl }}"' package.json
 
       # get from global inputs extra env vars from specific build environment: node_extra_env entry
       - name: Get Optional Env Vars - ${{ inputs.environment }}
@@ -280,15 +247,87 @@ jobs:
         with:
           cmd: yq e -I=0 '.node_build_dir // "./build"' ./.github/vars/inputs-global.yaml
 
+      # get from global inputs the setting if it is frontend target
+      - name: Get Front-End Setting
+        id: front_end
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.frontend // false' ./.github/vars/inputs-global.yaml
+
+      # get from global inputs the docker inline specification as text
+      - name: Get Docker Inline Setting
+        id: docker_inline
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -I=0 '.docker_inline // ""' ./.github/vars/inputs-global.yaml
+
+      # Get the owner repo
+      - name: Get owner
+        id: getowner
+        run: |
+          repo_owner=`echo "$GITHUB_REPOSITORY" | cut -f 1 -d "/"`
+          repo_name=`echo "$GITHUB_REPOSITORY" | cut -f 2 -d "/"`
+          echo "owner=$repo_owner" >> $GITHUB_OUTPUT
+          echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
+
+  build:
+    needs:
+      - pipeline-config
+    outputs:
+      semver: ${{ steps.semver.outputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      # Proceed with checkout of source with all the references (depth=0)  
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          #ref: ${{ inputs.ref }}
+          token: ${{ secrets.BOT_TOKEN }}
+      # Setup Node JS for builds with version provided
+      - name: Set Node Version
+        uses: actions/setup-node@v4
+        with:
+          node-version: "${{ needs.pipeline-config.outputs.node_version }}"
+          check-latest: true
+          token: ${{ secrets.BOT_TOKEN }}
+      # Helm Chart build & deploy Support
+      - uses: azure/setup-helm@v4
+        with:
+          version: 'latest'
+          token: ${{ secrets.BOT_TOKEN }}
+      # Cache all NPM packages
+      - name: Cache NPM packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Versioning SET
+      - name: Version SET
+        run: make version
+
+      - name: Version Capture
+        id: semver
+        run: |
+          echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      # Edit package.json in order to include repository for automatic linking
+      - name: Package.JSON - REPO auto link
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -oj -i '.repository.type="git"|.repository.url="${{ github.repositoryUrl }}"' package.json
+
       # Build the code!
       - name: Install Dependencies
         run: |
-          ${{ steps.node_extra_env_env.outputs.result != '' && steps.node_extra_env_env.outputs.result || steps.node_extra_env.outputs.result }} ${{ steps.install_command.outputs.result }}
+          ${{ needs.pipeline-config.outputs.node_extra_env_env != '' && needs.pipeline-config.outputs.node_extra_env_env || needs.pipeline-config.outputs.node_extra_env }} ${{ needs.pipeline-config.outputs.install_command }}
 
       # Build the code! build target MUST be defined in package.json
       - name: Run NPM Build
         run: |
-          ${{ steps.node_extra_env.outputs.result != '' && steps.node_extra_env.outputs.result || steps.node_extra_env_env.outputs.result }} ${{ steps.build_command.outputs.result }}
+          ${{ needs.pipeline-config.outputs.node_extra_env != '' && needs.pipeline-config.outputs.node_extra_env || needs.pipeline-config.outputs.node_extra_env_env }} ${{ needs.pipeline-config.outputs.build_command }}
 
       # Test the code
       - name: Test Code
@@ -303,97 +342,59 @@ jobs:
           registry: "https://npm.pkg.github.com"
           strategy: "all"
           access: "restricted"
-      #
-      # Docker Build login Azure
-      - name: Docker Login Azure
-        env:
-          TARGET: ${{ inputs.TARGET_CLOUD }}
-        if: ${{ steps.pipeline_docker.outputs.result == 1 && env.TARGET == 'AZURE' }}
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ inputs.DOCKER_REGISTRY_ADDRESS }}
-          username: ${{ secrets.AZURE_SERVICE_ID }}
-          password: ${{ secrets.AZURE_SERVICE_SECRET }}
-      #
-      # Docker Build login AWS
-      - name: Configure AWS Credentials
-        if: ${{ steps.pipeline_docker.outputs.result == 1 && inputs.TARGET_CLOUD == 'AWS' && inputs.AWS_STS_ROLE_ARN == '' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.AWS_REGION }}
-
-      #
-      # Docker Build login AWS - w/Assume Role
-      - name: Configure AWS Credentials with Assume Role
-        if: ${{ steps.pipeline_docker.outputs.result == 1 && inputs.TARGET_CLOUD == 'AWS' && inputs.AWS_STS_ROLE_ARN != '' }}
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: ${{ inputs.AWS_STS_ROLE_ARN }}
-          role-session-name: ${{ steps.getowner.outputs.repo_name }}-build
-          aws-region: ${{ inputs.AWS_REGION }}
-
-      - name: Docker Login AWS
-        if: ${{ steps.pipeline_docker.outputs.result == 1 && inputs.TARGET_CLOUD == 'AWS' }}
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ inputs.DOCKER_REGISTRY_ADDRESS }}
-      #
-      # Build-X run
-      - name: Set up Docker Buildx
-        if: steps.pipeline_docker.outputs.result == 1
-        uses: docker/setup-buildx-action@v3
-      # Push docker version latest release
-      - name: Docker Push Release
-        if: steps.pipeline_docker.outputs.result == 1 && inputs.isRelease
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          context: .
-          tags: |
-            ${{ inputs.DOCKER_REGISTRY_ADDRESS }}/${{ steps.getowner.outputs.owner }}/${{ steps.getowner.outputs.repo_name }}:latest
-            ${{ inputs.DOCKER_REGISTRY_ADDRESS }}/${{ steps.getowner.outputs.owner }}/${{ steps.getowner.outputs.repo_name }}:${{ steps.semver.outputs.version }}
-      # Push docker version but is not latest release
-      - name: Docker Push Non-Release
-        if: steps.pipeline_docker.outputs.result == 1 && ! inputs.isRelease
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          context: .
-          tags: |
-            ${{ inputs.DOCKER_REGISTRY_ADDRESS }}/${{ steps.getowner.outputs.owner }}/${{ steps.getowner.outputs.repo_name }}:${{ steps.semver.outputs.version }}
 
       #
       # Perform ZIP packaging of target files & globbed files
-      #
+      # Minimal compression = 1
       - name: ZIP file packaging
-        if: steps.pipeline_zip.outputs.result == 1
+        if: needs.pipeline-config.outputs.pipeline_zip
         run: |
           VERSION=$(cat VERSION)
-          ZIPFILE=target/${{ steps.getowner.outputs.repo_name }}-${VERSION}.zip
+          ZIPFILE=target/${{ needs.pipeline-config.outputs.repository_name }}.zip
           mkdir -p target/
-          echo '${{ steps.zip_globs.outputs.result }}' > target/.includelist
-          echo '${{ steps.exclude_globs.outputs.result }}' > target/.excludelist
-          zip -q -r -y ${ZIPFILE} . -i@target/.includelist -x@target/.excludelist
+          echo '${{ needs.pipeline-config.outputs.zip_globs }}' > target/.includelist
+          echo '${{ needs.pipeline-config.outputs.exclude_globs }}' > target/.excludelist
+          zip -1 -q -r -y ${ZIPFILE} . -i@target/.includelist -x@target/.excludelist
 
       # Perform of upload artfiacts
       - name: Upload Artifacts to workflow
         uses: actions/upload-artifact@v4
         with:
-          name: all-artifacts
+          name: all_artifacts
           path: |
-            target/${{ steps.getowner.outputs.repo_name }}*.zip
+            target/${{ needs.pipeline-config.outputs.repository_name }}*.zip
           retention-days: 1
+          include-hidden-files: true
 
       # Perform the node_build packaging right from the build directory
       - name: Upload Build result
         uses: actions/upload-artifact@v4
-        if: steps.pipeline_node_build.outputs.result == 1
+        if: needs.pipeline-config.outputs.pipeline_node_build
         with:
           name: node_build_artifact
-          path: ${{ steps.node_build_dir.outputs.result }}
+          path: ${{ needs.pipeline-config.outputs.node_build_dir }}
           retention-days: 1
           compression-level: '1' #fast
+
+  docker-build:
+    needs:
+      - pipeline-config
+      - build
+    runs-on: ubuntu-latest
+    if: needs.pipeline-config.outputs.pipeline_docker && needs.pipeline-config.outputs.front_end
+    uses: cloudopsworks/base-app-template/.github/workflows/docker-build-node.yml@v4
+    with:
+      DOCKER_REGISTRY_ADDRESS: ${{ inputs.DOCKER_REGISTRY_ADDRESS }}
+      BOT_USER: ${{ inputs.BOT_USER }}
+      BOT_EMAIL: ${{ inputs.BOT_EMAIL }}
+      TARGET_CLOUD: ${{ inputs.TARGET_CLOUD }}
+      AWS_REGION: ${{ inputs.AWS_REGION }}
+      AWS_STS_ROLE_ARN: ${{ inputs.AWS_STS_ROLE_ARN }}
+      isRelease: ${{ inputs.isRelease }}
+      repository_name: ${{ needs.pipeline-config.outputs.repository_name }}
+      repository_owner: ${{ github.repository_owner }}
+      docker_inline: ${{ needs.pipeline-config.outputs.docker_inline }}
+      front_end: ${{ needs.pipeline-config.outputs.front_end }}
+    secrets:
+      token: ${{ secrets.BOT_TOKEN }}
+      inherit: true

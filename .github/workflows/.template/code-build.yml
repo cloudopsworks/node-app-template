@@ -60,9 +60,6 @@ on:
       has_preview:
         description: "Has Preview output"
         value: ${{ jobs.pipeline-config.outputs.has_preview }}
-      pipeline_helm:
-        description: "Pipeline with Helm Enabled"
-        value: ${{ jobs.pipeline-config.outputs.pipeline_helm }}
       pipeline_docker:
         description: "Pipeline with Docker Enabled"
         value: ${{ jobs.pipeline-config.outputs.pipeline_docker }}
@@ -86,7 +83,6 @@ jobs:
   pipeline-config:
     outputs:
       has_preview: ${{ steps.has_preview.outputs.result == 1 }}
-      pipeline_helm: ${{ steps.pipeline_helm.outputs.result == 1 }}
       pipeline_docker: ${{ steps.pipeline_docker.outputs.result == 1 }}
       pipeline_sonarqube: ${{ steps.disable_sonarqube.outputs.result == 0 }}
       pipeline_dtrack: ${{ steps.disable_dtrack.outputs.result == 0 }}
@@ -171,13 +167,6 @@ jobs:
             type=Library
           fi
           echo "type=$type" >> $GITHUB_OUTPUT
-
-      # Get pipeline conf
-      - name: Get pipeline helm enable
-        id: pipeline_helm
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq e '.pipeline[]' ./.github/cloudopsworks-ci.yaml | grep helm | wc -l | tr -d " "
 
       # Get pipeline conf (build)
       - name: Get pipeline node_build packaging

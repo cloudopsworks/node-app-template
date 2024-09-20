@@ -421,6 +421,7 @@ jobs:
       front_end: ${{ needs.pipeline-config.outputs.front_end }}
       node_version: ${{ needs.pipeline-config.outputs.node_version }}
       custom_run_command: ${{ needs.pipeline-config.outputs.custom_run_command }}
+      node_build_dir: ${{ needs.pipeline-config.outputs.node_build_dir }}
     secrets:
       token: ${{ secrets.BOT_TOKEN }}
       inherit: true

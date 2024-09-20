@@ -2,6 +2,7 @@ organization_name: "ORG_NAME"
 organization_unit: "ORG_UNIT"
 environment_name: "ENV_NAME"
 repository_owner: "REPO_OWNER" # Required
+frontend: true | false # Set frontend=true to deploy only /build directory into ngnix enabled Dockerfile
 #api_files_dir: "relative-path-to-apidefs"
 # Optional Additional ENV variables
 #node_extra_env: |

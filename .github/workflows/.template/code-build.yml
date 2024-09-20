@@ -268,21 +268,21 @@ jobs:
         id: docker_args_global
         uses: mikefarah/yq@master
         with:
-        cmd: yq e -I=0 '.docker_args // ""' ./.github/vars/inputs-global.yaml
+          cmd: yq e -I=0 '.docker_args // ""' ./.github/vars/inputs-global.yaml
 
       # get from environmental inputs the docker arguments will override the one set on docker_args,also as text
       - name: Get Docker Arguments for ${{ inputs.environment }}
         id: docker_args_env
         uses: mikefarah/yq@master
         with:
-        cmd: yq e -I=0 '.docker_args // ""' ./.github/vars/inputs-${{ inputs.environment }}.yaml
+          cmd: yq e -I=0 '.docker_args // ""' ./.github/vars/inputs-${{ inputs.environment }}.yaml
 
       # get custom_run_command from global inputs
       - name: Get Custom Run Command
         id: custom_run_command
         uses: mikefarah/yq@master
         with:
-        cmd: yq e -I=0 '.custom_run_command // ""' ./.github/vars/inputs-global.yaml
+          cmd: yq e -I=0 '.custom_run_command // ""' ./.github/vars/inputs-global.yaml
 
       # Get the owner repo
       - name: Get owner

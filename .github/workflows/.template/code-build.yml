@@ -105,7 +105,7 @@ jobs:
       install_command: ${{ steps.install_command.outputs.result }}
       build_command: ${{ steps.build_command.outputs.result }}
       front_end: ${{ steps.front_end.outputs.result == 'true' }}
-      repository_name: ${{ needs.pipeline-config.outputs.repository_name }}
+      repository_name: ${{ steps.getowner.outputs.repo_name }}
       custom_run_command: ${{ steps.custom_run_command.outputs.result }}
     runs-on: ubuntu-latest
     steps:
@@ -413,6 +413,7 @@ jobs:
       AWS_REGION: ${{ inputs.AWS_REGION }}
       AWS_STS_ROLE_ARN: ${{ inputs.AWS_STS_ROLE_ARN }}
       isRelease: ${{ inputs.isRelease }}
+      semver: ${{ needs.build.outputs.semver }}
       repository_name: ${{ needs.pipeline-config.outputs.repository_name }}
       repository_owner: ${{ github.repository_owner }}
       docker_inline: ${{ needs.pipeline-config.outputs.docker_inline }}

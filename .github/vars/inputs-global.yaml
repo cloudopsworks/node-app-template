@@ -6,13 +6,9 @@ frontend: true | false # Set frontend=true to deploy only /build directory into 
 #docker_inline: |
 #  # Dockerfile content here
 #  # Example:
-#  # FROM node:14
 #  # WORKDIR /app
 #  # COPY package*.json ./
-#  # RUN npm install
-#  # COPY . .
-#  # EXPOSE 8080
-#  # CMD ["node", "server.js"]
+#  # COPY ./mydir ./my dest
 #docker_args: |
 #  ARG1=value1
 #  ARG2=value2

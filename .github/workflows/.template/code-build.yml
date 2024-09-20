@@ -423,4 +423,7 @@ jobs:
       node_build_dir: ${{ needs.pipeline-config.outputs.node_build_dir }}
     secrets:
       token: ${{ secrets.BOT_TOKEN }}
-      inherit: true
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AZURE_SERVICE_ID: ${{ secrets.AZURE_SERVICE_ID }}
+      AZURE_SERVICE_SECRET: ${{ secrets.AZURE_SERVICE_SECRET }}

@@ -3,22 +3,49 @@ organization_unit: "ORG_UNIT"
 environment_name: "ENV_NAME"
 repository_owner: "REPO_OWNER" # Required
 frontend: true | false # Set frontend=true to deploy only /build directory into ngnix enabled Dockerfile
+## Default node version is 20, uncomment to build with different, default dist is adopt, uncomment to use different dist
+## Image variant is alpine by default, uncomment to use different image variant for the specified dist
+#node:
+#  version: 12
+#  dist: adopt
+#  image_variant: alpine
+#
+# Set Sonarqube processing to false if want to disable, the tool is enabled by default
+#sonarqube:
+#  enabled: false
+# Set DependencyTrack processing to false if want to disable, the tool is enabled by default
+# type: is one of => Library , Application , Container , Framework , Device , Firmware , File , Operating System
+#       Default type is Application
+#dependencyTrack:
+#  enabled: false
+#  type: Application
+#
+# Dockerfile Inline content that will be merged into the Dockerfile
 #docker_inline: |
 #  # Dockerfile content here
 #  # Example:
 #  # WORKDIR /app
 #  # COPY package*.json ./
 #  # COPY ./mydir ./my dest
+#
+# Docker Arguments that will be passed to Docker Build Process
 #docker_args: |
 #  ARG1=value1
 #  ARG2=value2
 #  ARG3=value3
+#
+# Custom command that will be placed as startup script in dockerfile
 #custom_run_command: node run start
+#
+# Path where the API definitions are stored if different of default ./apifiles
 #api_files_dir: "relative-path-to-apidefs"
+#
 # Optional Additional ENV variables
 #node_extra_env: |
 #  ENV_VAR1=value1
 #  ENV_VAR2=value2
+#
+# Custom NPM Install and Build commands
 #custom_install_command: npm install
 #custom_build_command: npm run build
 #node_build_dir: ./build

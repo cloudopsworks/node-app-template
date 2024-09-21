@@ -8,6 +8,12 @@ config_map:
   enabled:  false
   files_path: values/configmaps
   mount_point: /app/configmap
+#
+# Docker Arguments that will be passed to Docker Build Process
+#docker_args: |
+#  ARG1=value1
+#  ARG2=value2
+#  ARG3=value3
 #helm_repo_url: oci://HELM_REPO_URL|https://HELM_REPO_URL
 #helm_chart_name: CHART_NAME
 #helm_chart_path: CHART_PATH

@@ -82,17 +82,18 @@ on:
 jobs:
   pipeline-config:
     outputs:
-      has_preview: ${{ steps.has_preview.outputs.result == 1 }}
-      pipeline_docker: ${{ steps.pipeline_docker.outputs.result == 1 }}
-      pipeline_sonarqube: ${{ steps.disable_sonarqube.outputs.result == 0 }}
-      pipeline_dtrack: ${{ steps.disable_dtrack.outputs.result == 0 }}
+      has_preview: ${{ steps.has_preview.outputs.result }} # true | false
+      pipeline_docker: ${{ steps.pipeline_docker.outputs.result == 1 }} # true | false
+      pipeline_sonarqube: ${{ steps.disable_sonarqube.outputs.result }} # true | false
+      pipeline_dtrack: ${{ steps.disable_dtrack.outputs.result }} # true | false
       pipeline_dtrack_project_type: ${{ steps.dtrack_project_type.outputs.type }}
       package_name: ${{ steps.package_name.outputs.result }}
       exclude_globs: ${{ steps.exclude_globs.outputs.result }}
       zip_globs: ${{ steps.zip_globs.outputs.result }}
-      pipeline_node_build: ${{ steps.pipeline_node_build.outputs.result }}
+      pipeline_node_build: ${{ steps.pipeline_node_build.outputs.result == 1 }}
       node_version: ${{ steps.node_version.outputs.result }}
       node_dist: ${{ steps.node_dist.outputs.result }}
+      node_image_variant: ${{ steps.node_image_variant.outputs.result }}
       node_build_dir: ${{ steps.node_build_dir.outputs.result }}
       node_extra_env_env: ${{ steps.node_extra_env_env.outputs.result }}
       node_extra_env: ${{ steps.node_extra_env.outputs.result }}
@@ -100,7 +101,7 @@ jobs:
       docker_args: ${{ steps.docker_args_env.outputs.result == '' && steps.docker_args_global.outputs.result || steps.docker_args_env.outputs.result }}
       install_command: ${{ steps.install_command.outputs.result }}
       build_command: ${{ steps.build_command.outputs.result }}
-      front_end: ${{ steps.front_end.outputs.result == 'true' }}
+      front_end: ${{ steps.front_end.outputs.result }} # true | false
       repository_name: ${{ steps.getowner.outputs.repo_name }}
       custom_run_command: ${{ steps.custom_run_command.outputs.result }}
     runs-on: ubuntu-latest
@@ -116,13 +117,21 @@ jobs:
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version // "20"' ./.github/cloudopsworks-ci.yaml
+          cmd: yq eval '.build.node.version // "20"' ./.github/vars/inputs-global.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.dist // "adopt"' ./.github/cloudopsworks-ci.yaml
+          cmd: yq eval '.build.node.dist // "adopt"' ./.github/vars/inputs-global.yaml
+
+      # Get pipeline conf java image variant defaults to alpine
+      - name: Get pipeline NodeJS image variant
+        id: node_image_variant
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.node.image_variant // "alpine"' ./.github/vars/inputs-global.yaml
+
       # Get pipeline conf
       - name: Get pipeline docker enable
         id: pipeline_docker
@@ -135,38 +144,28 @@ jobs:
         id: has_preview
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.cd.preview.enabled' ./.github/cloudopsworks-ci.yaml | grep true | wc -l | tr -d " "
+          cmd: yq e '.cd.preview.enabled // "false"' ./.github/cloudopsworks-ci.yaml
 
       # Get Sonarqube Configuration is disabled
       - name: Get Pipeline conf Sonarqube is Disabled
         id: disable_sonarqube
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.build.sonarqube.enabled' ./.github/cloudopsworks-ci.yaml | grep false | wc -l | tr -d " "
+          cmd: yq e '.sonarqube.enabled // "true"' ./.github/vars/inputs-global.yaml
 
       # Get DependencyTrack Configuration is disabled
       - name: Get Pipeline conf DependencyTrack is Disabled
         id: disable_dtrack
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.build.dependencyTrack.enabled' ./.github/cloudopsworks-ci.yaml | grep false | wc -l | tr -d " "
+          cmd: yq e '.dependencyTrack.enabled // "true"' ./.github/vars/inputs-global.yaml
 
       # Get DependencyTrack project type configuration, default is null
       - name: Get Pipeline conf DependencyTrack Project type
-        id: dtrack_project_type_eval
+        id: dtrack_project_type
         uses: mikefarah/yq@master
         with:
-          cmd: yq e '.build.dependencyTrack.type' ./.github/cloudopsworks-ci.yaml
-
-      # Determine Dependency Track Project Type properly with default
-      - name: Determine Pipeline conf DependencyTrack Project type
-        id: dtrack_project_type
-        run: |
-          type=${{ steps.dtrack_project_type_eval.outputs.result }}
-          if [ "$type" == "null" ] ; then
-            type=Library
-          fi
-          echo "type=$type" >> $GITHUB_OUTPUT
+          cmd: yq e '.dependencyTrack.type // "Application"' ./.github/vars/inputs-global.yaml
 
       # Get pipeline conf (build)
       - name: Get pipeline node_build packaging
@@ -364,7 +363,7 @@ jobs:
       # Perform the node_build packaging right from the build directory
       - name: Upload Build result
         uses: actions/upload-artifact@v4
-        if: needs.pipeline-config.outputs.pipeline_node_build
+        if: needs.pipeline-config.outputs.pipeline_node_build == 'true'
         with:
           name: node_build_artifact
           path: ${{ needs.pipeline-config.outputs.node_build_dir }}
@@ -376,7 +375,7 @@ jobs:
     needs:
       - pipeline-config
       - build
-    if: needs.pipeline-config.outputs.pipeline_docker && needs.pipeline-config.outputs.front_end
+    if: needs.pipeline-config.outputs.pipeline_docker == 'true'
     uses: cloudopsworks/base-app-template/.github/workflows/docker-build-node.yml@v4
     with:
       DOCKER_REGISTRY_ADDRESS: ${{ inputs.DOCKER_REGISTRY_ADDRESS }}
@@ -393,6 +392,8 @@ jobs:
       docker_args: ${{ needs.pipeline-config.outputs.docker_args }}
       front_end: ${{ needs.pipeline-config.outputs.front_end == 'true' }}
       node_version: ${{ needs.pipeline-config.outputs.node_version }}
+      node_dist:  ${{ needs.pipeline-config.outputs.node_dist }}
+      node_image_variant: ${{ needs.pipeline-config.outputs.node_image_variant }}
       custom_run_command: ${{ needs.pipeline-config.outputs.custom_run_command }}
       node_build_dir: ${{ needs.pipeline-config.outputs.node_build_dir }}
     secrets:

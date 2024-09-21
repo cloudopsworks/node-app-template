@@ -375,7 +375,7 @@ jobs:
     needs:
       - pipeline-config
       - build
-    if: needs.pipeline-config.outputs.pipeline_docker
+    if: needs.pipeline-config.outputs.pipeline_docker == 'true'
     uses: cloudopsworks/base-app-template/.github/workflows/docker-build-node.yml@v4
     with:
       DOCKER_REGISTRY_ADDRESS: ${{ inputs.DOCKER_REGISTRY_ADDRESS }}

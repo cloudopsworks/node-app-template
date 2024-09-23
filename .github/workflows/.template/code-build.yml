@@ -350,7 +350,7 @@ jobs:
       # Perform of upload of artfiacts only if not front_end
       - name: Upload Artifacts to workflow
         if: ${{ needs.pipeline-config.outputs.front_end != 'true' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.5
         with:
           name: all_artifacts
           path: |

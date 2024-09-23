@@ -26,8 +26,8 @@ code/init: packages/install/gitversion packages/install/gh
 	$(eval $@_OWNER := $(shell $(GH) repo view --json 'name,owner' -q '.owner.login'))
 ifeq ($(OS),darwin)
 	@sed -i '' -e "s/\"name\": \".*\"/\"name\": \"@$($@_OWNER)\/$(PROJECT)\"/g" package.json
-	@sed -i '' -e "s/\"version\": \".*\"/\"version\": \"$(shell $(GITVERSION) -output json -showvariable SemVer | tr '+' '-')\"/g" package.json
+	@sed -i '' -e "s/\"version\": \".*\"/\"version\": \"$(shell $(GITVERSION) -output json -showvariable MajorMinorPatch | tr '+' '-')\"/g" package.json
 else ifeq ($(OS),linux)
 	@sed -i -e "s/\"name\": \".*\"/\"name\": \"@$($@_OWNER)\/$(PROJECT)\"/g" package.json
-	@sed -i -e "s/\"version\": \".*\"/\"version\": \"$(shell $(GITVERSION) -output json -showvariable SemVer | tr '+' '-')\"/g" package.json
+	@sed -i -e "s/\"version\": \".*\"/\"version\": \"$(shell $(GITVERSION) -output json -showvariable MajorMinorPatch | tr '+' '-')\"/g" package.json
 endif

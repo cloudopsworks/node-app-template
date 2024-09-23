@@ -1,5 +1,5 @@
 ##
-# (c) 2022 - Cloud Ops Works LLC - https://cloudops.works/
+# (c) 2024 - Cloud Ops Works LLC - https://cloudops.works/
 #            On GitHub: https://github.com/cloudopsworks
 #            Distributed Under Apache v2.0 License
 #
@@ -43,13 +43,13 @@ jobs:
         id: node_version
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.version // "20"' ./.github/cloudopsworks-ci.yaml
+          cmd: yq eval '.node.version // "20"' ./.github/vars/inputs-global.yaml
       # Get pipeline conf node dist
       - name: Get pipeline node dist
         id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.dist // "adopt"' ./.github/cloudopsworks-ci.yaml
+          cmd: yq eval '.build.node.dist // "adopt"' ./.github/vars/inputs-global.yaml
       # Setup Node JS for builds with version provided
       - name: Set Node Version
         uses: actions/setup-node@v4

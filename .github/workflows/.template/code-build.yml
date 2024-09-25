@@ -89,7 +89,9 @@ jobs:
       pipeline_dtrack_project_type: ${{ steps.dtrack_project_type.outputs.type }}
       package_name: ${{ steps.package_name.outputs.result }}
       exclude_globs: ${{ steps.exclude_globs.outputs.result }}
+      raw_exclude_globs: ${{ steps.raw_exclude_globs.outputs.result }}
       zip_globs: ${{ steps.zip_globs.outputs.result }}
+      zip_globs_line: ${{ steps.zip_globs_line.outputs.result }}
       pipeline_node_build: ${{ steps.pipeline_node_build.outputs.result == 1 }}
       node_version: ${{ steps.node_version.outputs.result }}
       node_dist: ${{ steps.node_dist.outputs.result }}
@@ -182,11 +184,25 @@ jobs:
           cmd: yq e '.zipGlobs[]' ./.github/cloudopsworks-ci.yaml
 
       # Get pipeline conf
+      - name: Get pipeline zip packaging globs
+        id: zip_globs_line
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.zipGlobs[]' ./.github/cloudopsworks-ci.yaml | tr '\n' ' '
+
+      # Get pipeline conf
       - name: Get pipeline zip packaging exclude globs
         id: exclude_globs
         uses: mikefarah/yq@master
         with:
           cmd: yq e '.excludeGlobs[] | "!" + .' ./.github/cloudopsworks-ci.yaml
+
+      # Get pipeline conf
+      - name: Get pipeline zip packaging exclude globs
+        id: raw_exclude_globs
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e '.excludeGlobs[]' ./.github/cloudopsworks-ci.yaml
 
       # Get Package Name from package.json
       - name: Get package Name
@@ -347,15 +363,23 @@ jobs:
           strategy: "all"
           access: "restricted"
 
+      # The problem with NodeJS are the symlinks, so we need first to create a TAR file
+      # with including the zip_globs and excluding the exclude_globs with -X option
+      # -X options needs an input file so we need to create a temporary file
+      - name: Create TAR file
+        id: tar_file
+        run: |
+          echo "${{ needs.pipeline-config.outputs.raw_exclude_globs }}" > /tmp/exclude_globs.txt
+          tar -cf node_artifacts.tar -X /tmp/exclude_globs.txt ${{ needs.pipeline-config.outputs.zip_globs_line }}
+          echo "artifact=node_artifacts.tar" >> $GITHUB_OUTPUT
+
       # Perform of upload of artfiacts only if not front_end
       - name: Upload Artifacts to workflow
         if: ${{ needs.pipeline-config.outputs.front_end != 'true' }}
-        uses: actions/upload-artifact@v4.3.5
+        uses: actions/upload-artifact@v4
         with:
           name: all_artifacts
-          path: |
-            ${{ needs.pipeline-config.outputs.zip_globs }}
-            ${{ needs.pipeline-config.outputs.exclude_globs }}
+          path: node_artifacts.tar
           retention-days: 1
           include-hidden-files: true
           compression-level: '1' #fast

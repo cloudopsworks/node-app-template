@@ -10,8 +10,8 @@ GH ?= $(INSTALL_PATH)/gh
 version: packages/install/gitversion
 	$(call assert-set,GITVERSION)
 ifeq ($(GIT_IS_TAG),1)
-	@echo "$(GIT_TAG)" | sed 's/^v\([0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}\)\(+deploy-.*\)\?$$/\1/' > VERSION
-	@npm version $(shell echo "$(GIT_TAG)" | sed 's/^v//') --git-tag-version=false --commit-hooks=false
+	@echo "$(GIT_TAG)" | sed -e 's/^v\([0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}\(-[a-zA-Z0-9.]\{1,\}\)*\)\(+deploy-.*\)\?$$/\1/' > VERSION
+	@npm version $$(cat VERSION) --git-tag-version=false --commit-hooks=false
 else
 	# Translates + in version to - for helm/docker compatibility
 	@echo "$(shell $(GITVERSION) -output json -showvariable FullSemVer | tr '+' '-')" > VERSION

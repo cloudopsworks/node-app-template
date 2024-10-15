@@ -16,6 +16,13 @@ on:
           - release/production
           - test/uat
           - prerelease/demo
+      environment:
+        type: choice
+        description: Environment to destroy
+        options:
+          - dev
+          - uat
+          - prod
       lockId:
         type: string
         description: Lock ID for the environment

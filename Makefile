@@ -26,5 +26,5 @@ code/init: packages/install/gitversion packages/install/gh packages/install/yq
 	$(call assert-set,GH)
 	$(call assert-set,YQ)
 	$(eval $@_OWNER := $(shell $(GH) repo view --json 'name,owner' -q '.owner.login'))
-	@$(YQ) eval -i '.name = "@$($@_OWNER)/$(PROJECT)"' package.json
-	@$(YQ) eval -i '.version = "$(shell $(GITVERSION) -output json -showvariable MajorMinorPatch | tr '+' '-')"' package.json
+	@$(YQ) eval -i -oj '.name = "@$($@_OWNER)/$(PROJECT)"' package.json
+	@$(YQ) eval -i -oj '.version = "$(shell $(GITVERSION) -output json -showvariable MajorMinorPatch | tr '+' '-')"' package.json

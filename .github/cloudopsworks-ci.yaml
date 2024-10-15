@@ -4,9 +4,7 @@
 #            Distributed Under Apache v2.0 License
 #
 zipGlobs:
-  - node_modules/**
   - "."
-  - .env
 excludeGlobs:
   - Dockerfile
   - .helmignore
@@ -22,7 +20,9 @@ excludeGlobs:
   - skafold*
   - gulpfile*
   - tronador/*
+  - .tronador
   - Makefile
+  - apifiles/
 
 # Repo & CD Configurations
 # Some of them previously managed in OWNERS file

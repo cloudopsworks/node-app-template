@@ -1,5 +1,8 @@
 environment: "dev|uat|prod|demo"
 runner_set: "RUNNER-ENV"
+aws:
+  region: "AWS_REGION"
+  sts_role_arn: "AWS_STS_ROLE_ARN"
 lambda:
   arch: x86_64 | arm64
   #  iam:
@@ -136,7 +139,7 @@ lambda:
   #  enabled: true
   #  arn: arn:aws:elasticfilesystem:us-east-1:123456789012:file-system/fs-12345678
   #  local_mount_path: /mnt/efs
-
+  
   ##
   # Optional: triggers notifications for the lambda function.
   triggers: {}

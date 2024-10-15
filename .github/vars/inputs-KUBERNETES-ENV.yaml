@@ -8,23 +8,24 @@ config_map:
   enabled:  false
   files_path: values/configmaps
   mount_point: /app/configmap
+#helm_repo_url: oci://HELM_REPO_URL|https://HELM_REPO_URL
+#helm_chart_name: CHART_NAME
+#helm_chart_path: CHART_PATH
+helm_values_overrides:
+  'image.repository': REGISTRY/REPOSITORY
 #
 # Docker Arguments that will be passed to Docker Build Process
 #docker_args: |
 #  ARG1=value1
 #  ARG2=value2
 #  ARG3=value3
-#helm_repo_url: oci://HELM_REPO_URL|https://HELM_REPO_URL
-#helm_chart_name: CHART_NAME
-#helm_chart_path: CHART_PATH
-helm_values_overrides:
-  'image.repository': REGISTRY/REPOSITORY
 
 # The following are for cloud specific configurations
 # These will be used to filter the secrets from the secret manager
 # and created as secrets in the Kubernetes cluster, then inyected as environment variables
 # For Azure:
 #azure:
+#  resource_group: RESOURCE_GROUP
 #  keyvayult_name: KEYVAULT_NAME
 #  keyvault_secret_filter: KEYVAULT_SECRET_FILTER
 #  pod_identity:
@@ -34,6 +35,7 @@ helm_values_overrides:
 # For AWS
 #aws:
 #  region: AWS_REGION
+#  sts_role_arn: AWS_STS_ROLE_ARN
 #  secrets_path_filter: /secrets
 #  pod_identity:
 #    enabled: true

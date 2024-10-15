@@ -57,7 +57,7 @@ jobs:
         id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.dist // "adopt"' ./.github/vars/inputs-global.yaml
+          cmd: yq eval '.node.dist // "adopt"' ./.github/vars/inputs-global.yaml
       # Setup Node JS for builds with version provided
       - name: Set Node Version
         uses: actions/setup-node@v4
@@ -85,7 +85,7 @@ jobs:
           echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
 
       # Get Package Name from package.json
-      - name: Get package Name
+      - name: Get Package name
         id: package_name
         uses: mikefarah/yq@master
         with:

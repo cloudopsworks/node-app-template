@@ -49,7 +49,7 @@ jobs:
         id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.dist // "adopt"' ./.github/vars/inputs-global.yaml
+          cmd: yq eval '.node.dist // "adopt"' ./.github/vars/inputs-global.yaml
       # Setup Node JS for builds with version provided
       - name: Set Node Version
         uses: actions/setup-node@v4

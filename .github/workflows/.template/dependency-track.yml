@@ -22,9 +22,12 @@ on:
       dependencyTrackUrl:
         required: true
         type: string
+      source_artifacts:
+        required: true
+        type: string
 
     secrets:
-      BOT_TOKEN:
+      token:
         required: true
       dependencyTrackToken:
         required: true
@@ -37,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.BOT_TOKEN }}
+          token: ${{ secrets.token }}
           #ref: ${{ inputs.ref }}
       # Get pipeline conf node version
       - name: Get pipeline node version
@@ -50,14 +53,14 @@ jobs:
         id: node_dist
         uses: mikefarah/yq@master
         with:
-          cmd: yq eval '.build.node.dist // "adopt"' ./.github/vars/inputs-global.yaml
+          cmd: yq eval '.node.dist // "adopt"' ./.github/vars/inputs-global.yaml
       # Setup Node JS for builds with version provided
       - name: Set Node Version
         uses: actions/setup-node@v4
         with:
           node-version: "${{ steps.node_version.outputs.result }}"
           check-latest: true
-          token: ${{ secrets.BOT_TOKEN }}
+          token: ${{ secrets.token }}
       # Cache all NPM packages
       - name: Cache NPM packages
         uses: actions/cache@v4

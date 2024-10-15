@@ -16,8 +16,18 @@ on:
           - release/production
           - test/uat
           - prerelease/demo
-
-
+      environment:
+        type: choice
+        description: Environment to destroy
+        options:
+          - dev
+          - uat
+          - prod
+      qualifier:
+        type: string
+        description: Qualifier for the lock (green/bluee)
+        required: false
+        default: ''
 
 concurrency: build-${{ github.repository }}-${{ github.ref }}
 
@@ -31,7 +41,7 @@ permissions:
 
 jobs:
   data:
-    uses: {{REPO_OWNER}}/base-app-template/.github/workflows/cd-data.yml@v4
+    uses: {{REPO_OWNER}}/base-app-template/.github/workflows/cd-data.yml@v5
     secrets:
       token: ${{ secrets.BOT_TOKEN_SCOPED }}
 
@@ -51,13 +61,14 @@ jobs:
     needs:
       - data
       - build-data
-    uses: {{REPO_OWNER}}/base-app-template/.github/workflows/destroy.yml@v4
+    uses: {{REPO_OWNER}}/base-app-template/.github/workflows/iac-destroy.yml@v5
     with:
+      qualifier: ${{ inputs.qualifier }}
       release_version: ${{ needs.build-data.outputs.semver }}
       release_name: ${{ needs.data.outputs.targetName }}
       environment: ${{ needs.data.outputs.environment }}
       package_name: ${{ needs.build-data.outputs.package_name }}
-      package_type: MAVEN
+      package_type: NPM
       deployment_name: ${{ inputs.destroyedDeploymentName }}
       target_cloud: ${{ needs.data.outputs.cloud }}
       target_cloud_type: ${{ needs.data.outputs.cloudType }}

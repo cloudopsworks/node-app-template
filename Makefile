@@ -3,6 +3,7 @@ TRONADOR_AUTO_INIT := true
 
 GITVERSION ?= $(INSTALL_PATH)/gitversion
 GH ?= $(INSTALL_PATH)/gh
+YQ ?= $(INSTALL_PATH)/yq
 
 -include $(shell curl -sSL -o .tronador "https://cowk.io/acc"; echo .tronador)
 
@@ -20,14 +21,10 @@ endif
 
 # Modify package.json to change the project name with the $(PROJECT) variable
 ## Code Initialization for Node Project
-code/init: packages/install/gitversion packages/install/gh
+code/init: packages/install/gitversion packages/install/gh packages/install/yq
 	$(call assert-set,GITVERSION)
 	$(call assert-set,GH)
+	$(call assert-set,YQ)
 	$(eval $@_OWNER := $(shell $(GH) repo view --json 'name,owner' -q '.owner.login'))
-ifeq ($(OS),darwin)
-	@sed -i '' -e "s/\"name\": \".*\"/\"name\": \"@$($@_OWNER)\/$(PROJECT)\"/g" package.json
-	@sed -i '' -e "s/\"version\": \".*\"/\"version\": \"$(shell $(GITVERSION) -output json -showvariable MajorMinorPatch | tr '+' '-')\"/g" package.json
-else ifeq ($(OS),linux)
-	@sed -i -e "s/\"name\": \".*\"/\"name\": \"@$($@_OWNER)\/$(PROJECT)\"/g" package.json
-	@sed -i -e "s/\"version\": \".*\"/\"version\": \"$(shell $(GITVERSION) -output json -showvariable MajorMinorPatch | tr '+' '-')\"/g" package.json
-endif
+	@$(YQ) eval -i -oj '.name = "@$($@_OWNER)/$(PROJECT)"' package.json
+	@$(YQ) eval -i -oj '.version = "$(shell $(GITVERSION) -output json -showvariable MajorMinorPatch | tr '+' '-')"' package.json

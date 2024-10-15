@@ -16,6 +16,13 @@ on:
           - release/production
           - test/uat
           - prerelease/demo
+      environment:
+        type: choice
+        description: Environment to destroy
+        options:
+          - dev
+          - uat
+          - prod
       qualifier:
         type: string
         description: Qualifier for the lock (green/bluee)

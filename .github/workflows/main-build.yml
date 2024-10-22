@@ -66,7 +66,7 @@ jobs:
         id: config
         uses: ./bp/ci/config
 
-      - name: Build Java
+      - name: Build Node.js
         id: build
         uses: ./bp/ci/nodejs/build
         with:
@@ -92,9 +92,9 @@ jobs:
         uses: ./bp/ci/nodejs/container
         with:
           semver: ${{ steps.build.outputs.semver }}
-          java_version: ${{ steps.build.outputs.java_version }}
-          java_dist: ${{ steps.build.outputs.java_dist }}
-          java_image_variant: ${{ steps.build.outputs.java_image_variant }}
+          node_version: ${{ steps.build.outputs.node_version }}
+          node_dist: ${{ steps.build.outputs.node_dist }}
+          node_image_variant: ${{ steps.build.outputs.node_image_variant }}
           environment: ${{ steps.config.outputs.environment }}
           is_release: ${{ steps.config.outputs.is_release }}
           default_registry_address: ${{ vars.DOCKER_REGISTRY_ADDRESS }}

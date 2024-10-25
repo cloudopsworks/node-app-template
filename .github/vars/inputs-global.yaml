@@ -22,6 +22,15 @@ frontend: true | false # Set frontend=true to deploy only /build directory into 
 # Set Sonarqube processing to true if want to enable, the tool is disabled by default
 #sonarqube:
 #  enabled: true
+#  sources_path: "/"
+#  libraries_path: "**/node_modules/**/*"
+#  tests_path: "/"
+
+#  tests_inclusions: "**/test/**/*"
+#  tests_libraries: "**/node_modules/**/*"
+#  exclusions: "**/node_modules/**/*,"**/test/**/*"
+#  extra_exclusions:
+#  branch_disabled: true # uncomment only if you are using Community Sonarqube
 #
 # Set DependencyTrack processing to false if want to disable, the tool is enabled by default
 # type: is one of => Library , Application , Container , Framework , Device , Firmware , File , Operating System

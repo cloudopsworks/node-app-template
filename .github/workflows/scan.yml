@@ -140,7 +140,6 @@ jobs:
         continue-on-error: true
         with:
           source_path: ${{ steps.co.outputs.source_path }}
-          bot_user: ${{ inputs.bot_user }}
           token: ${{ inputs.token }}
           sonarqube_url: ${{ inputs.sonarqube_url }}
           sonarqube_token: ${{ secrets.sonarqube_token }}

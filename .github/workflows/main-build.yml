@@ -74,6 +74,7 @@ jobs:
         with:
           bot_user: ${{ vars.BOT_USER }}
           token: ${{ secrets.BOT_TOKEN }}
+          environment: ${{ steps.config.outputs.environment }}
 
       - name: Deploy Component
         if: steps.config.outputs.is_library == 'true'

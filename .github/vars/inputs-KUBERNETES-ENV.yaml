@@ -21,6 +21,12 @@ helm_values_overrides:
 #  ARG2=value2
 #  ARG3=value3
 
+#
+# Optional Node.JS Additional ENV variables
+#node_extra_env: |
+#  ENV_VAR1=value1
+#  ENV_VAR2=value2
+#
 # The following are for cloud specific configurations
 # These will be used to filter the secrets from the secret manager
 # and created as secrets in the Kubernetes cluster, then inyected as environment variables

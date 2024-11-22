@@ -1,6 +1,12 @@
 environment: "dev|uat|prod|demo"
 runner_set: "RUNNER-ENV"
 #disable_deploy: true
+#
+# Optional Node.JS Additional ENV variables
+#node_extra_env: |
+#  ENV_VAR1=value1
+#  ENV_VAR2=value2
+#
 aws:
   region: "AWS_REGION"
 #  sts_role_arn: "AWS_STS_ROLE_ARN" # Optional: when existing role is same for build and deploy

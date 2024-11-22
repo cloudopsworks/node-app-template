@@ -22,6 +22,9 @@ on:
       default_runner_set:
         required: true
         type: string
+      environment:
+        required: true
+        type: string
 
     secrets:
       token:
@@ -120,6 +123,7 @@ jobs:
         with:
           bot_user: ${{ inputs.bot_user }}
           token: ${{ inputs.token }}
+          environment: ${{ inputs.environment }}
 
       - name: Test / Verify / Install Node.js
         id: test

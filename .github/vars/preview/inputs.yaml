@@ -1,7 +1,7 @@
 environment: "preview"
 config_map:
   enabled:  false
-  files_path: values/configmaps
+  #files_path: .
   mount_point: /var/configmaps
 helm_values_overrides: {}
 

@@ -112,7 +112,7 @@ jobs:
           default_registry_address: ${{ vars.DOCKER_REGISTRY_ADDRESS }}
           project_key: ${{ steps.config.outputs.project_key }}
           project_owner: ${{ steps.config.outputs.project_owner }}
-          front_end: ${{ steps.config.outputs.front_end }}
+          front_end: ${{ steps.build.outputs.front_end }}
 
   deploy-container:
     needs:

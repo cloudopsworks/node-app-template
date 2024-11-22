@@ -132,7 +132,8 @@ jobs:
         id: node-config
         uses: ./bp/ci/nodejs/config
         with:
-          environment: ${{ steps.config.outputs.environment }}
+          environment: ${{ inputs.environment }}
+          has_preview: ${{ inputs.is_preview }}
 
       - name: Build Node.js
         id: build

@@ -4,6 +4,7 @@ runner_set: "RUNNER-ENV"
 versions_bucket: "VERSIONS_BUCKET"
 #logs_bucket: "LOGS_BUCKET"
 #blue_green: true # uncomment for Prod environment to support blue/green deploy
+container_registry: REGISTRY
 #
 # Optional Node.JS Additional ENV variables
 #node_extra_env: |

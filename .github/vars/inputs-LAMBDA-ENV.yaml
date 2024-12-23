@@ -1,6 +1,9 @@
 environment: "dev|uat|prod|demo"
 runner_set: "RUNNER-ENV"
 #disable_deploy: true
+versions_bucket: "VERSIONS_BUCKET"
+#logs_bucket: "LOGS_BUCKET"
+container_registry: REGISTRY # optional if Preview = false, can comment out
 #
 # Optional Node.JS Additional ENV variables
 #node_extra_env: |

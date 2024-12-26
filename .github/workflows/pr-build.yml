@@ -52,7 +52,10 @@ jobs:
   code-build:
     name: 'Code Build - Branch: ${{ github.ref_name }}'
     runs-on: ubuntu-latest
-    if: ${{ ! startsWith(github.head_ref, 'release/') && ! startsWith(github.head_ref,'support/') && ! startsWith(github.head_ref,'master')}}
+    if: |
+      (! startsWith(github.head_ref, 'release/')) &&
+      (! startsWith(github.head_ref,'support/')) &&
+      (! startsWith(github.head_ref,'master'))
     outputs:
       is_release: ${{ steps.config.outputs.is_release }}
       is_pre_release: ${{ steps.config.outputs.is_pre_release }}
@@ -111,7 +114,9 @@ jobs:
         uses: ./bp/ci/nodejs/artifacts
 
       - name: Build & Save Container
-        if: ${{ steps.config.outputs.container_enabled == 'true' && steps.config.outputs.is_library != 'true' }}
+        if: |
+	  (steps.config.outputs.container_enabled == 'true') && 
+	  (steps.config.outputs.is_library != 'true')
         uses: ./bp/ci/nodejs/container
         with:
           semver: ${{ steps.build.outputs.semver }}
@@ -128,7 +133,10 @@ jobs:
   deploy-container:
     needs:
       - code-build
-    if: ${{ needs.code-build.outputs.container_enabled == 'true' && needs.code-build.outputs.deployment_enabled == 'true' && needs.code-build.outputs.is_library != 'true' }}
+    if: |
+      (needs.code-build.outputs.container_enabled == 'true') &&
+      (needs.code-build.outputs.deployment_enabled == 'true') &&
+      (needs.code-build.outputs.is_library != 'true')
     uses: ./.github/workflows/deploy-container.yml
     with:
       deployment_name: ${{ needs.code-build.outputs.deployment_name }}

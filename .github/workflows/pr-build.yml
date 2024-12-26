@@ -115,8 +115,8 @@ jobs:
 
       - name: Build & Save Container
         if: |
-	  (steps.config.outputs.container_enabled == 'true') && 
-	  (steps.config.outputs.is_library != 'true')
+          (steps.config.outputs.container_enabled == 'true') && 
+          (steps.config.outputs.is_library != 'true')
         uses: ./bp/ci/nodejs/container
         with:
           semver: ${{ steps.build.outputs.semver }}

@@ -5,6 +5,10 @@ runner_set: "RUNNER-ENV"
 container_registry: REGISTRY
 cluster_name: CLUSTER_NAME
 namespace: NAMESPACE
+secret_files:
+  enabled: false
+  #files_path: values/secrets
+  mount_point: /app/secrets
 config_map:
   enabled:  false
   #files_path: values/configmaps

@@ -128,31 +128,12 @@ jobs:
         with:
           blueprint_ref: 'v5'
 
-      - name: Node.js Configuration
-        id: node-config
-        uses: ./bp/ci/nodejs/config
-        with:
-          environment: ${{ inputs.environment }}
-          has_preview: ${{ inputs.is_preview }}
-
-      - name: Build Node.js
-        id: build
-        uses: ./bp/ci/nodejs/build
+      - name: Download Target Artifacts
+        uses: ./bp/ci/common/download/artifacts
         with:
           bot_user: ${{ inputs.bot_user }}
           token: ${{ secrets.token }}
-          install_command: ${{ steps.node-config.outputs.install_command }}
-          build_command: ${{ steps.node-config.outputs.build_command }}
-          node_extra_env: ${{ steps.node-config.outputs.node_extra_env }}
-
-      - name: Test / Verify / Install Node.js
-        id: test
-        uses: ./bp/ci/nodejs/test/verify
-        with:
-          bot_user: ${{ inputs.bot_user }}
-          token: ${{ secrets.token }}
-          dtrack_project_type: ${{ needs.preload.outputs.dtrack_project_type }}
-          node_extra_env: ${{ steps.node-config.outputs.node_extra_env }}
+          is_tar: true
 
       - name: Snyk Scan
         if: ${{ needs.preload.outputs.snyk_enabled == 'true' }}

@@ -76,7 +76,7 @@ jobs:
         with:
           environment: ${{ steps.config.outputs.environment }}
 
-      - name: Build Node.js
+      - name: Node.js Build and Test
         id: build
         uses: ./bp/ci/nodejs/build
         with:

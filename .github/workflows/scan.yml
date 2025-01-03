@@ -134,6 +134,7 @@ jobs:
           bot_user: ${{ inputs.bot_user }}
           token: ${{ secrets.token }}
           destination_path: 'target'
+          is_tar: true
 
       - name: Snyk Scan
         if: ${{ needs.preload.outputs.snyk_enabled == 'true' }}

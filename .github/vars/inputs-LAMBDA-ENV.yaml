@@ -24,6 +24,8 @@ lambda:
   #      principals:
   #        - lambda.amazonaws.com
   #        - apigateway.amazonaws.com
+  #    policy_attachments:
+  #     - arn: arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
   #    statements:
   #      - effect: Allow # Uncomment below to if vpc.enabled = true
   #        action:

@@ -174,6 +174,12 @@ lambda:
   #        Location:
   #          - New York
   #    filterSuffix: ".log"
+
+  ## Lambda Layers
+  layers: []
+  #  - arn: arn:aws:lambda:us-east-1:123456789012:layer:my-layer:1
+  #  - arn: arn:aws:lambda:us-east-1:123456789012:layer:my-layer:2
+  #  - arn: arn:aws:lambda:us-east-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-30-1:1
   ## Others will come later
 
 ##

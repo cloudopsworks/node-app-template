@@ -111,6 +111,7 @@ jobs:
           bot_user: ${{ inputs.bot_user }}
           token: ${{ secrets.token }}
           is_tar: true
+          exclude_opts: "./node_modules"
 
       - name: Semgrep Scan
         if: ${{ needs.preload.outputs.semgrep_enabled == 'true' }}

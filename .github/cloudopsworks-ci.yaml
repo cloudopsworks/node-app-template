@@ -23,6 +23,9 @@ excludeGlobs:
   - .tronador
   - Makefile
   - apifiles/*
+  - .nyc_output/*
+  - coverage/*
+  - bom.xml
 
 # Repo & CD Configurations
 # Some of them previously managed in OWNERS file

@@ -4,7 +4,9 @@
 #            Distributed Under Apache v2.0 License
 #
 zipGlobs:
-  - "."
+  - node_modules/**
+  - ./**
+  - .env
 excludeGlobs:
   - Dockerfile
   - .helmignore

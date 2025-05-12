@@ -155,7 +155,7 @@ jobs:
           environment: ${{ inputs.environment }}
 
 #      - name: Destroy GCP
-#        if: ${{ needs.preload.outputs.cloud == 'GCP' }}
+#        if: ${{ needs.preload.outputs.cloud == 'GCP' && (inputs.target == 'app' || inputs.target == 'BOTH') }}
 #        uses: ./bp/cd/deploy/app/azure
 #        with:
 #          destroy: true

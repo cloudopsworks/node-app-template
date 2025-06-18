@@ -40,7 +40,12 @@ frontend: true | false # Set frontend=true to deploy only /build directory into 
 #  type: Application
 #
 # Set if this is a library project
-#isLibrary: true
+#isLibrary: true # DEPRECATED!
+#is_library: true
+#npm:
+#  registry: "https://npm.pkg.github.com" # Optional, if not set will use the default npm registry: https://npm.pkg.github.com
+#  strategy: all | upgrade # all is the default, upgrade will only update the dependencies that are not at latest version
+#  access: restricted | public # restricted is the default, public will publish to public npm registry
 #
 # Dockerfile Inline content that will be merged into the Dockerfile
 #docker_inline: |

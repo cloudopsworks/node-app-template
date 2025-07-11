@@ -23,6 +23,7 @@ frontend: true | false # Set frontend=true to deploy only /build directory into 
 #sonarqube:
 #  enabled: true
 #  fail_on_quality_gate: true
+#  quality_gate_enabled: false # defaults to true
 #  sources_path: "/"
 #  libraries_path: "**/node_modules/**/*"
 #  tests_path: "/"

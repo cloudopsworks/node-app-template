@@ -24,6 +24,11 @@ ingress:
                 port:
                   number: 80
 
+#env:
+# Uncomment below to disable the aws-sdk instrumentation if not disabled in the code for health checks
+#  - name: OTEL_NODE_DISABLED_INSTRUMENTATIONS
+#    value: "aws-sdk"
+
 # Uncomment to enable opentelemetry instrumentation
 #podAnnotations:
 #  instrumentation.opentelemetry.io/inject-nodejs: "true"

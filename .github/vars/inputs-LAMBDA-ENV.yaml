@@ -75,6 +75,9 @@ lambda:
   #        - "*"
   environment:
     variables:
+      #Uncomment below to disable the aws-sdk instrumentation if not disabled in the code for health checks
+      #- name: OTEL_NODE_DISABLED_INSTRUMENTATIONS
+      #  value: "aws-sdk"
       - name: key
         value: value
   handler: index.handler

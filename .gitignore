@@ -134,4 +134,5 @@ dist
 
 ### Tronador ###
 tronador/
+.tronador*.mk
 .tronador

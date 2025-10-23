@@ -64,6 +64,7 @@ jobs:
       - name: Checkout w/Blueprint
         uses: cloudopsworks/blueprints/cd/checkout@v5.9
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           blueprint_ref: 'v5.9'
           source_ref: 'develop'
 
@@ -236,7 +237,7 @@ jobs:
   workflow_upgrade:
     name: "Workflow Version Baseline Upgrade"
     runs-on: ubuntu-latest
-    if: ${{ inputs.run_workflow_upgrade && vars.PATCHWORK_ENABLED == 'true' }}
+    if: ${{ inputs.run_workflow_upgrade }}
     steps:
       - name: Checkout w/Blueprint
         uses: cloudopsworks/blueprints/cd/checkout@v5.9

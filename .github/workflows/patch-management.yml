@@ -104,6 +104,7 @@ jobs:
       - name: Checkout w/Blueprint
         uses: cloudopsworks/blueprints/cd/checkout@v5.9
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           blueprint_ref: 'v5.9'
           source_ref: 'develop'
 
@@ -142,6 +143,7 @@ jobs:
       - name: Checkout w/Blueprint
         uses: cloudopsworks/blueprints/cd/checkout@v5.9
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           blueprint_ref: 'v5.9'
           source_ref: 'develop'
 
@@ -178,6 +180,7 @@ jobs:
       - name: Checkout w/Blueprint
         uses: cloudopsworks/blueprints/cd/checkout@v5.9
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           blueprint_ref: 'v5.9'
           source_ref: 'develop'
 
@@ -210,6 +213,7 @@ jobs:
       - name: Checkout w/Blueprint
         uses: cloudopsworks/blueprints/cd/checkout@v5.9
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           blueprint_ref: 'v5.9'
           source_ref: 'develop'
 
@@ -242,6 +246,7 @@ jobs:
       - name: Checkout w/Blueprint
         uses: cloudopsworks/blueprints/cd/checkout@v5.9
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           blueprint_ref: 'v5.9'
           source_ref: 'develop'
 

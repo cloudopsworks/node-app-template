@@ -1,10 +1,47 @@
+# Enable deployment through StatefulSet
+# This is useful for applications that require stable network identities and persistent storage.
+#statefulset:
+#  enabled: true
+
+# Enable deployment through DaemonSet
+# This is useful for applications that need to run on every node in the cluster.
+#daemonset:
+#  enabled: true
+
+# Enable to deploy Kubernetes Job instead of Deployment
+#job:
+#  enabled: true
+
+# Enable to deploy Kubernetes CronJob instead of Deployment
+#cronjob:
+#  enabled: true
+#  restartPolicy: OnFailure
+
+# Deployment Annotations
 #annotations: {}
+
+# Pod specific Annotations
 #podAnnotations: {}
-# Affinity  & Tolerations configuration for Pods
+#  instrumentation.opentelemetry.io/inject-nodejs: "true" # Uncomment and remove brackets to enable opentelemetry instrumentation
+
+# Affinity & Antiaffinity configuration for Pods
 #affinity: {}
+
+# Node / Pod Tolerations
 #tolerations: {}
+
+# Node Selector Affinity
 #nodeSelector: {}
+
+# Additional Volume Mounts for Pods
+#additionalVolumeMounts: {}
+
+# Additional Volumes allocated to Deployments
+#additionalVolumes: {}
+
+# Replicas Required to Run Deployment - only required for Deployment or StatefulSet
 #replicaCount: 1
+
 # Deployment Strategy - Defaults to Recreate
 #strategy:
 #  type: RollingUpdate
@@ -14,8 +51,11 @@
 
 # define environment variables here as a map of key: value
 #env:
-# - name: ENV_VAR_NAME
-#   value: "ENV VAR VALUE"
+# Uncomment below to disable the aws-sdk instrumentation if not disabled in the code for health checks
+#  - name: OTEL_NODE_DISABLED_INSTRUMENTATIONS
+#    value: "aws-sdk"
+#  - name: ENV_VAR_NAME
+#    value: "ENV VAR VALUE"
 #  ...
 
 # define environment variables to set from ConfigMap / Secret
@@ -53,15 +93,6 @@ ingress:
                 port:
                   number: 80
 
-#env:
-# Uncomment below to disable the aws-sdk instrumentation if not disabled in the code for health checks
-#  - name: OTEL_NODE_DISABLED_INSTRUMENTATIONS
-#    value: "aws-sdk"
-
-# Uncomment to enable opentelemetry instrumentation
-#podAnnotations:
-#  instrumentation.opentelemetry.io/inject-nodejs: "true"
-
 # HorizontalPodAutoscaler
 #hpa:
 #  enabled: false
@@ -94,25 +125,6 @@ ingress:
   #create: false
   #annotations: {}
   #name: (optional)
-
-# Enable deployment through StatefulSet
-# This is useful for applications that require stable network identities and persistent storage.
-#statefulset:
-#  enabled: true
-
-# Enable deployment through DaemonSet
-# This is useful for applications that need to run on every node in the cluster.
-#daemonset:
-#  enabled: true
-
-# Enable to deploy Kubernetes Job instead of Deployment
-#job:
-#  enabled: true
-
-# Enable to deploy Kubernetes CronJob instead of Deployment
-#cronjob:
-#  enabled: true
-#  restartPolicy: OnFailure
 
 # KEDA ScaledObject Configuration
 #keda:

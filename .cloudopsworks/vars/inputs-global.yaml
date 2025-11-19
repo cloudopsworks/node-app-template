@@ -4,10 +4,10 @@ environment_name: "ENV_NAME"
 repository_owner: "REPO_OWNER" # Required
 frontend: true | false # Set frontend=true to deploy only /build directory into ngnix enabled Dockerfile
 #
-## Default node version is 20, uncomment to build with different, default dist is adopt, uncomment to use different dist
+## Default node version is 24, uncomment to build with different, default dist is adopt, uncomment to use different dist
 ## Image variant is alpine by default, uncomment to use different image variant for the specified dist
 #node:
-#  version: 12
+#  version: 20
 #  dist: adopt
 #  image_variant: alpine
 #

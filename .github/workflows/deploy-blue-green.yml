@@ -107,6 +107,12 @@ jobs:
         id: config
         uses: ./bp/ci/config
 
+      - name: Node.js Configuration
+        id: node-config
+        uses: ./bp/ci/nodejs/config
+        with:
+          environment: ${{ steps.config.outputs.environment }}
+
       - name: Deploy AWS
         if: ${{ inputs.cloud == 'AWS' }}
         uses: ./bp/cd/deploy/app/aws
@@ -126,6 +132,7 @@ jobs:
           environment: ${{ steps.config.outputs.environment }}
           observability_enabled: ${{ inputs.observability_enabled }}
           observability_agent: ${{ inputs.observability_agent }}
+          front_end: ${{ steps.node-config.outputs.front_end }}
 
       - name: Deploy Azure
         if: ${{ inputs.cloud == 'AZURE' }}
@@ -145,6 +152,7 @@ jobs:
           environment: ${{ steps.config.outputs.environment }}
           observability_enabled: ${{ inputs.observability_enabled }}
           observability_agent: ${{ inputs.observability_agent }}
+          front_end: ${{ steps.node-config.outputs.front_end }}
 
       - name: Deploy GCP
         if: ${{ inputs.cloud == 'GCP' }}
@@ -164,6 +172,7 @@ jobs:
           environment: ${{ steps.config.outputs.environment }}
           observability_enabled: ${{ inputs.observability_enabled }}
           observability_agent: ${{ inputs.observability_agent }}
+          front_end: ${{ steps.node-config.outputs.front_end }}
 
   deploy-blue:
     needs:
@@ -182,6 +191,12 @@ jobs:
         id: config
         uses: ./bp/ci/config
 
+      - name: Node.js Configuration
+        id: node-config
+        uses: ./bp/ci/nodejs/config
+        with:
+          environment: ${{ steps.config.outputs.environment }}
+
       - name: Deploy AWS
         if: ${{ inputs.cloud == 'AWS' }}
         uses: ./bp/cd/deploy/app/aws
@@ -200,6 +215,7 @@ jobs:
           environment: ${{ steps.config.outputs.environment }}
           observability_enabled: ${{ inputs.observability_enabled }}
           observability_agent: ${{ inputs.observability_agent }}
+          front_end: ${{ steps.node-config.outputs.front_end }}
 
       - name: Deploy Azure
         if: ${{ inputs.cloud == 'AZURE' }}
@@ -219,6 +235,7 @@ jobs:
           environment: ${{ steps.config.outputs.environment }}
           observability_enabled: ${{ inputs.observability_enabled }}
           observability_agent: ${{ inputs.observability_agent }}
+          front_end: ${{ steps.node-config.outputs.front_end }}
 
       - name: Deploy GCP
         if: ${{ inputs.cloud == 'GCP' }}
@@ -238,6 +255,7 @@ jobs:
           environment: ${{ steps.config.outputs.environment }}
           observability_enabled: ${{ inputs.observability_enabled }}
           observability_agent: ${{ inputs.observability_agent }}
+          front_end: ${{ steps.node-config.outputs.front_end }}
 
   deploy-apis:
     needs:

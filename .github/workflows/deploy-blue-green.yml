@@ -393,7 +393,6 @@ jobs:
           project_key: ${{ steps.config.outputs.project_key }}
           deployment_name: ${{ inputs.deployment_name }}
           environment: ${{ steps.config.outputs.environment }}
-          front_end: ${{ steps.node-config.outputs.front_end }}
 
       - name: Destroy Azure
         if: ${{ inputs.cloud == 'AZURE' }}
@@ -412,7 +411,6 @@ jobs:
           project_key: ${{ steps.config.outputs.project_key }}
           deployment_name: ${{ inputs.deployment_name }}
           environment: ${{ steps.config.outputs.environment }}
-          front_end: ${{ steps.node-config.outputs.front_end }}
 
       - name: Destroy GCP
         if: ${{ inputs.cloud == 'GCP' }}
@@ -432,4 +430,3 @@ jobs:
           project_key: ${{ steps.config.outputs.project_key }}
           deployment_name: ${{ inputs.deployment_name }}
           environment: ${{ steps.config.outputs.environment }}
-          front_end: ${{ steps.node-config.outputs.front_end }}

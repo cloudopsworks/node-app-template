@@ -71,6 +71,7 @@ permissions:
   pull-requests: write
   issues: write
   checks: write
+  security-events: write
 
 jobs:
   preload:

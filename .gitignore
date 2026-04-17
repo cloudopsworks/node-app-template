@@ -90,6 +90,7 @@ typings/
 
 # Next.js build output
 .next
+next-env.d.ts
 
 # Nuxt.js build / generate output
 .nuxt
@@ -136,3 +137,8 @@ dist
 tronador/
 .tronador*.mk
 .tronador
+
+### AI Agents ###
+.claude
+.gstack
+.opencode

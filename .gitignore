@@ -139,6 +139,9 @@ tronador/
 .tronador
 
 ### AI Agents ###
-.claude
-.gstack
-.opencode
+.claude/
+.gstack/
+.opencode/
+.omc/
+.omx/
+.ai/

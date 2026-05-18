@@ -1,3 +1,5 @@
+# This file defines the input variables for the Cloud Run module.
+# Agents: cloud=gcp ; cloud_type=cloudrun
 environment: "dev|uat|prod|demo"
 #runner_set: "RUNNER-ENV" # Optional: when using self-hosted runners
 #disable_deploy: true
@@ -14,17 +16,6 @@ gcp:
 #  impersonate_sa: "GCP project Service Account e-mail" # Optional: when existing role is same for build and deploy
 #  build_impresonate_sa: "GCP project Service Account e-mail" # Optional: when existing role is different for build and deploy
 #  deploy_impersonate_sa: "GCP project Service Account e-mail" # Optional: when existing role is different for build and deploy
-dns:
-  enabled: false
-  private_zone: false
-  domain_name: DOMAIN_NAME
-  alias_prefix: ALIAS_PREFIX
-alarms:
-  enabled: false
-  threshold: 15
-  period: 120
-  evaluation_periods: 2
-  destination_topic: DESTINATION_SNS
 cloudrun:
   type: service | job | worker_pool
   #ingress: all | internal | internal_lb  # default: all

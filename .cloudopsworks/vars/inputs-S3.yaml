@@ -1,0 +1,35 @@
+environment: "dev|uat|prod|demo"
+#runner_set: "RUNNER-ENV" # Optional: when using self-hosted runners
+#disable_deploy: true
+versions_bucket: "VERSIONS_BUCKET"
+#logs_bucket: "LOGS_BUCKET"
+container_registry: REGISTRY # optional if Preview = false, can comment out
+#
+# Optional Node.JS Additional ENV variables
+#node_extra_env: |
+#  ENV_VAR1=value1
+#  ENV_VAR2=value2
+#
+aws:
+  region: "AWS_REGION"
+#  sts_role_arn: "AWS_STS_ROLE_ARN" # Optional: when existing role is same for build and deploy
+#  build_sts_role_arn: "BUILD_AWS_STS_ROLE_ARN" # Optional: when existing role is different for build and deploy
+#  deploy_sts_role_arn: "DEPLOYMENT_AWS_STS_ROLE_ARN" # Optional: when existing role is different for build and deploy
+s3:
+  # Bucket name and prefix path for storing build artifacts, logs, and other files
+  bucket_name: "BUCKET_NAME"
+  prefix: "PREFIX_PATH"
+  # CloudFront distribution ID for invalidating cached content after deployment,
+  # set to true to enable CloudFront invalidation, and specify the distribution ID and paths to invalidate
+  cloudfront:
+    enabled: false
+    distribution_id: "CLOUDFRONT_DISTRIBUTION_ID"
+    invalidation_paths:
+      - "/*"
+
+
+##
+# Optional variable for adding extra tags to the environment
+tags: {}
+#  key: value
+#  key2: value2

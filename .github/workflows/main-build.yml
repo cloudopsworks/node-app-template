@@ -91,6 +91,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           install_command: ${{ steps.node-config.outputs.install_command }}
           build_command: ${{ steps.node-config.outputs.build_command }}
+          package_manager: ${{ steps.node-config.outputs.package_manager }}
           node_extra_env: ${{ steps.node-config.outputs.node_extra_env }}
           observability_enabled: ${{ steps.config.outputs.observability_enabled }}
           observability_agent: ${{ steps.config.outputs.observability_agent }}

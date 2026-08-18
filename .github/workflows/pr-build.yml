@@ -35,6 +35,7 @@ permissions:
 
 jobs:
   check-pr:
+    name: Check Pull Request
     runs-on: ubuntu-latest
     steps:
       - name: Checkout w/Blueprint
@@ -135,6 +136,7 @@ jobs:
           front_end: ${{ steps.node-config.outputs.front_end }}
 
   deploy-container:
+    name: Deploy Container
     needs:
       - code-build
     if: |

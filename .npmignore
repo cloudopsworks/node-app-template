@@ -16,6 +16,11 @@ gulpfile*
 Makefile*
 *.log
 *.log.*
+bom.xml
+.cloudopsworks/*
+coverage/*
+.tronador*
+tronador/*
 
 
 # IntelliJ idea

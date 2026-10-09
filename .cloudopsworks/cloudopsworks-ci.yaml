@@ -31,6 +31,7 @@ excludeGlobs:
   - .nyc_output/*
   - coverage/*
   - bom.xml
+  - .cloudopsworks/*
 
 # Repo & CD Configurations
 # Some of them previously managed in OWNERS file

@@ -102,6 +102,8 @@ jobs:
         with:
           bot_user: ${{ vars.BOT_USER }}
           token: ${{ secrets.BOT_TOKEN }}
+          semver: ${{ steps.build.outputs.semver }}
+          is_pre_release: ${{ steps.config.outputs.is_pre_release }}
 
       - name: Save Build Artifacts
         uses: ./bp/ci/nodejs/artifacts

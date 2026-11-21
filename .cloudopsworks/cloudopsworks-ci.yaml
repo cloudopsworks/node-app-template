@@ -6,32 +6,6 @@
 #       WebSite: https://cloudops.works
 #     Distributed Under Apache v2.0 License
 #
-zipGlobs:
-  - node_modules/**
-  - ./**
-  - .env
-excludeGlobs:
-  - Dockerfile
-  - .helmignore
-  - .dockerignore
-  - .git*
-  - .git/
-  - OWNER*
-  - README.md
-  - jenkins*
-  - target/*
-  - charts/*
-  - cloudopsworks-ci*
-  - skafold*
-  - gulpfile*
-  - tronador/*
-  - .tronador
-  - Makefile
-  - apifiles/*
-  - .nyc_output/*
-  - coverage/*
-  - bom.xml
-  - .cloudopsworks/*
 
 # Repo & CD Configurations
 # Some of them previously managed in OWNERS file

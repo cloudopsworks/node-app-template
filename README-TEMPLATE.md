@@ -2,8 +2,9 @@
 
 ## Agent command policy
 
-The `Makefile` remains for compatibility, but direct Make invocation is deprecated
-for README and Git-flow/version operations. Agents must use the Tronador CLI:
+Use the Tronador CLI (`tronador-cli`, installed as `tronador`) directly for project
+initialization, README generation, and version workflows. The root `Makefile` is
+retained only for compatibility.
 
 - Run `tronador readme build` to render README output. If committed target/dependency
   documentation also needs refresh, run `tronador docs targets` first.
@@ -159,7 +160,6 @@ The main repository-level configuration lives in:
 
 This file controls:
 
-- zip/include and exclude rules for build artifacts
 - repository protection and reviewer configuration
 - GitFlow enablement
 - deployment environment mapping (`develop`, `test`, `release`, `prerelease`, `hotfix`, `support`)
@@ -205,6 +205,13 @@ Update this file first. It defines shared settings such as:
 - preview environments
 - observability
 - target cloud and `cloud_type`
+
+**Artifact packaging:** `zipGlobs` (files to include) and `excludeGlobs` (files
+to omit) have moved out of `.cloudopsworks/cloudopsworks-ci.yaml`. If your
+project needs additional patterns, set either key as a top-level list in
+`.cloudopsworks/vars/inputs-global.yaml`. Each list is merged with the
+[blueprint defaults](https://github.com/cloudopsworks/blueprints/blob/v5.10/artifacts/config/nodejs.yaml)
+rather than replacing them. Omit both keys to use the defaults unchanged.
 
 ### Choose one deployment target file
 
@@ -357,7 +364,7 @@ these commands — never fetch or apply template changes manually.
 4. Commit the result with: `chore: upgrade from <template-name> <old-version> → <new-version> +semver: patch`
 5. Use `/cw-release` to create and merge the hotfix PR (see [Release Workflow — use `cw-release`](#release-workflow--use-cw-release)).
 
-> **Note:** `Makefile`, `.github/`, `.cloudopsworks/labeler.yml`, `.cloudopsworks/Makefile`,
+> **Note:** `Makefile`, `.github/`, `.cloudopsworks/labeler.yml`,
 > and `.cloudopsworks/LICENSE` are owned by the template and will be overwritten on every upgrade.
 > Do not edit these files manually in derived repositories.
 

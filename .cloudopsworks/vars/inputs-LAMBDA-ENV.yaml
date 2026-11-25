@@ -23,13 +23,14 @@ lambda:
   arch: x86_64 | arm64
   # Optional: remove the inline {} after iam: before uncommenting any nested keys.
   # The default and dedicated roles both receive required polling and Active X-Ray permissions.
+  # S3, SNS, EventBridge rules and Scheduler add their principals automatically.
+  # SQS, DynamoDB Streams and Kinesis are polled by the function role, not invoker callers.
   iam: {}
   #  enabled: true
-  #  execRole: # Explicit invoker role; Scheduler gets an invoker automatically.
-  #    enabled: true
+  #  execRole: # List only additional callers; repeating a non-Scheduler trigger removes its role trust source restriction.
+  #    enabled: true # Optional with a non-empty list; false disables configured callers, not inferred trigger trust.
   #    principals:
-  #      - lambda.amazonaws.com
-  #      - apigateway.amazonaws.com
+  #      - apigateway.amazonaws.com # Use lambda_exec_role_arn as the API Gateway integration credentials.
   #  policy_attachments:
   #    - arn: arn:aws:iam::123456789012:policy/my-lambda-app-policy # For additional application permissions.
   #  statements:
